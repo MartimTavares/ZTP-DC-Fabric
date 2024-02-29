@@ -1,0 +1,116 @@
+name: dc1
+
+topology:
+  kinds:
+    srl:
+      image: ghcr.io/nokia/srlinux
+    linux:
+      image: ghcr.io/hellt/network-multitool
+  nodes:
+    leaf1:
+      kind: srl
+      type: ixrd2
+      binds:
+        # Executable File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
+        # YANG Models:
+        #- /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
+        # Configuration File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
+        # Python Script:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.py:/etc/opt/srlinux/appmgr/user_agents/configurationless.py:rw
+    leaf2:
+      kind: srl
+      type: ixrd2
+      binds:
+        # Executable File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
+        # YANG Models:
+        #- /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
+        # Configuration File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
+        # Python Script:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.py:/etc/opt/srlinux/appmgr/user_agents/configurationless.py:rw
+    leaf3:
+      kind: srl
+      type: ixrd2
+      binds:
+        # Executable File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
+        # YANG Models:
+        #- /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
+        # Configuration File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
+        # Python Script:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.py:/etc/opt/srlinux/appmgr/user_agents/configurationless.py:rw
+    spine1:
+      kind: srl
+      type: ixrd3
+      binds:
+        # Executable File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
+        # YANG Models:
+        #- /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
+        # Configuration File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
+        # Python Script:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.py:/etc/opt/srlinux/appmgr/user_agents/configurationless.py:rw
+    spine2:
+      kind: srl
+      type: ixrd3
+      binds:
+        # Executable File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
+        # YANG Models:
+        #- /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
+        # Configuration File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
+        # Python Script:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.py:/etc/opt/srlinux/appmgr/user_agents/configurationless.py:rw
+    server11:
+      kind: linux
+      exec:
+        - ip link set address 00:c1:ab:11:00:11 dev eth1
+        - ip addr add 192.168.0.1/24 dev eth1
+        - sysctl -w net.ipv6.conf.all.disable_ipv6=1
+    server21:
+      kind: linux
+      exec:
+        - ip link set address 00:c1:ab:11:00:21 dev eth1
+        - ip addr add 192.168.0.1/24 dev eth1
+        - sysctl -w net.ipv6.conf.all.disable_ipv6=1
+    server22:
+      kind: linux
+      exec:
+        - ip link set address 00:c1:ab:11:00:22 dev eth1
+        - ip addr add 192.168.0.2/24 dev eth1
+        - sysctl -w net.ipv6.conf.all.disable_ipv6=1
+    server13:
+      kind: linux
+      exec:
+        - ip link set address 00:c1:ab:11:00:13 dev eth1
+        - ip addr add 192.168.0.3/24 dev eth1
+        - sysctl -w net.ipv6.conf.all.disable_ipv6=1
+    server23:
+      kind: linux
+      exec:
+        - ip link set address 00:c1:ab:11:00:23 dev eth1
+        - ip addr add 192.168.0.3/24 dev eth1
+        - sysctl -w net.ipv6.conf.all.disable_ipv6=1
+  links:
+  # inter-switch links
+    # leaf1 <-> spines
+    - endpoints: ["leaf1:e1-49", "spine1:e1-1"]
+    - endpoints: ["leaf1:e1-50", "spine2:e1-1"]
+    # leaf2 <-> spines
+    - endpoints: ["leaf2:e1-49", "spine1:e1-2"]
+    - endpoints: ["leaf2:e1-50", "spine2:e1-2"]
+    # leaf3 <-> spines
+    - endpoints: ["leaf3:e1-49", "spine1:e1-3"]
+    - endpoints: ["leaf3:e1-50", "spine2:e1-3"]
+    # server links
+    - endpoints: ["server11:eth1", "leaf1:e1-1"]
+    - endpoints: ["server21:eth1", "leaf1:e1-2"]
+    - endpoints: ["server22:eth1", "leaf2:e1-1"]
+    - endpoints: ["server13:eth1", "leaf3:e1-1"]
+    - endpoints: ["server23:eth1", "leaf3:e1-2"]

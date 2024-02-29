@@ -1,0 +1,17 @@
+configurationless:
+   #run-as-user: root
+   path: /etc/opt/srlinux/appmgr/user_agents/
+   launch-command: /usr/local/bin/configurationless.sh
+   search-command: /bin/bash /usr/local/bin/configurationless.sh
+   wait-for-config: No
+   failure-threshold: 100
+   failure-action: wait=1
+   #yang-modules:
+   #    names: 
+   #        - "configurationless"
+   #    source-directories:
+   #        - "/opt/srtelemetry/yang/"
+   #        - "/opt/srlinux/models/srl_nokia/models"
+   #        #- "/opt/srlinux/models/srl_nokia/models/common"
+   #        #- "/opt/srlinux/models/srl_nokia/models/network-instance"
+   #        #- "/opt/srlinux/models/srl_nokia/models/system"
