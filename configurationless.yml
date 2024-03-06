@@ -1,5 +1,5 @@
 configurationless:
-   #run-as-user: root
+   run-as-user: root
    path: /etc/opt/srlinux/appmgr/user_agents/
    launch-command: /usr/local/bin/configurationless.sh
    search-command: /bin/bash /usr/local/bin/configurationless.sh
