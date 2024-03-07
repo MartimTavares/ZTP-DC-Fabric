@@ -24,7 +24,7 @@ topology:
       exec:
         - chmod +r /etc/opt/srlinux/appmgr/user_agents/
         - chmod +x /usr/local/bin/configurationless.sh
-        - chmod -R 755 /home/srlinux/.cache/pip
+        #- chmod -R 755 /home/srlinux/.cache/pip
     leaf2:
       kind: srl
       type: ixrd2
@@ -40,7 +40,7 @@ topology:
       exec:
         - chmod +r /etc/opt/srlinux/appmgr/user_agents/
         - chmod +x /usr/local/bin/configurationless.sh
-        - chmod -R 755 /home/srlinux/.cache/pip
+        #- chmod -R 755 /home/srlinux/.cache/pip
     leaf3:
       kind: srl
       type: ixrd2
@@ -56,7 +56,7 @@ topology:
       exec:
         - chmod +r /etc/opt/srlinux/appmgr/user_agents/
         - chmod +x /usr/local/bin/configurationless.sh
-        - chmod -R 755 /home/srlinux/.cache/pip
+        #- chmod -R 755 /home/srlinux/.cache/pip
     spine1:
       kind: srl
       type: ixrd3
@@ -72,7 +72,7 @@ topology:
       exec:
         - chmod +r /etc/opt/srlinux/appmgr/user_agents/
         - chmod +x /usr/local/bin/configurationless.sh
-        - chmod -R 755 /home/srlinux/.cache/pip
+        #- chmod -R 755 /home/srlinux/.cache/pip
     spine2:
       kind: srl
       type: ixrd3
@@ -88,7 +88,7 @@ topology:
       exec: 
         - chmod +r /etc/opt/srlinux/appmgr/user_agents/
         - chmod +x /usr/local/bin/configurationless.sh
-        - chmod -R 755 /home/srlinux/.cache/pip
+        #- chmod -R 755 /home/srlinux/.cache/pip
     server11:
       kind: linux
       exec:
