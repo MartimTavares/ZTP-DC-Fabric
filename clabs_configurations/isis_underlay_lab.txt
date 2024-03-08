@@ -1,0 +1,594 @@
+-----------------------------------------------------------------
+-----------------------------------------------------------------
+-----------------------------------------------------------------
+-----------------------------------------------------------------
+-----------------------------------------------------------------
+-----------------------------------------------------------------
+# containerlab deploy -t dc.clab.yaml
+# Entering in the machine: docker exec -it clab-dc-leaf1 sr_cli
+# / show network-instance default protocols isis interface
+# / show network-instance default protocols isis interface ethernet-1/49.0 detail
+# / show network-instance default protocols isis adjacency
+# / show network-instance default route-table ipv4-unicast summary
+
+# / info from state network-instance default protocols isis instance i1
+
+# Stop a node
+# tools system app-management application xdp_lc_1 stop
+
+# State from LLDP neighbors
+# / info from state system lldp interface *
+
+# Check configuration as json
+# / network-instance default protocols isis instance i1
+# info | as json
+
+# Paths to use for gnmi set conf
+# tree xpath
+# tree xpath / system lldp
+
+# Extract state information in Python -> subscribe notifications from conf -> gets notification of new configurations performed on the sr linux
+# Set configurations through gNMI (need to set up gNMI server on sr linux)
+-----------------------------------------------------------------
+-----------------------------------------------------------------
+#LEAF 1
+/ interface system0 {
+    admin-state enable
+    subinterface 0 {
+      ipv4 {
+          admin-state enable
+          address 10.0.0.1/32
+      }
+    }
+}
+/ interface ethernet-1/49 {
+  admin-state enable
+  subinterface 0 {
+    admin-state enable
+    ipv4 {
+        admin-state enable
+        unnumbered {
+            admin-state enable
+            interface system0.0
+        }
+    }
+  }
+}
+/ interface ethernet-1/50 {
+  admin-state enable
+  subinterface 0 {
+    admin-state enable
+    ipv4 {
+        admin-state enable
+        unnumbered {
+            admin-state enable
+            interface system0.0
+        }
+    }
+  }
+}
+/ network-instance default admin-state enable
+/ network-instance default interface ethernet-1/49.0
+/ network-instance default interface ethernet-1/50.0
+/ network-instance default interface system0.0
+
+/ routing-policy {
+  policy all {
+    default-action {
+      policy-result accept
+    }
+  }
+}
+/ network-instance default protocols
+isis {
+    instance i1 {
+        admin-state enable
+        level-capability L1
+        net [49.0001.1921.6800.1001.00]
+        interface ethernet-1/49.0 {
+            admin-state enable
+            circuit-type point-to-point
+        }
+        interface ethernet-1/50.0 {
+            admin-state enable
+            circuit-type point-to-point
+        }
+        interface system0.0 {
+           admin-state enable
+           circuit-type point-to-point
+           passive true
+        }
+    }   
+}
+
+/ network-instance default protocols
+bgp {
+  admin-state enable
+  autonomous-system 100
+  router-id 10.0.0.1
+  group overlay {
+    export-policy all
+    import-policy all
+    peer-as 100
+    local-as {
+      as-number 100
+    }
+    afi-safi ipv4-unicast {
+      admin-state disable
+    }
+    afi-safi ipv6-unicast {
+      admin-state disable
+    }
+    afi-safi evpn {
+      admin-state enable
+    }
+  }
+  afi-safi evpn {
+      admin-state enable
+  }
+  # Route Reflector address
+  neighbor 10.0.0.4 {
+    peer-group overlay
+  }
+}
+
+# EVPN SPECIFICS WHICH WONT BE AUTOMATED BY THE AGENT
+/ tunnel-interface vxlan1 {
+  vxlan-interface 1 {
+    type bridged
+    ingress {
+      vni 11
+    }
+  }
+}
+/ interface ethernet-1/1 {
+  admin-state enable
+  subinterface 0 {
+    admin-state enable
+    type bridged
+  }
+}
+/ network-instance vrf-blue {
+  admin-state enable
+  type mac-vrf
+  interface ethernet-1/1.0 {
+  }
+  vxlan-interface vxlan1.1 {
+  }
+  protocols {
+    bgp-evpn {
+      bgp-instance 1 {
+        admin-state enable
+        vxlan-interface vxlan1.1
+        evi 111
+      }
+    }
+    bgp-vpn {
+      bgp-instance 1 {
+        route-target {
+          export-rt target:100:111
+          import-rt target:100:111
+        }
+      }
+    }
+  }
+}
+-----------------------------------------------------------------
+#LEAF 2
+/ interface system0 {
+    admin-state enable
+    subinterface 0 {
+      ipv4 {
+          admin-state enable
+          address 10.0.0.2/32
+      }
+    }
+}
+/ interface ethernet-1/49 {
+  admin-state enable
+  subinterface 0 {
+    admin-state enable
+    ipv4 {
+        admin-state enable
+        unnumbered {
+            admin-state enable
+            interface system0.0
+        }
+    }
+  }
+}
+/ interface ethernet-1/50 {
+  admin-state enable
+  subinterface 0 {
+    admin-state enable
+    ipv4 {
+        admin-state enable
+        unnumbered {
+            admin-state enable
+            interface system0.0
+        }
+    }
+  }
+}
+/ network-instance default admin-state enable
+/ network-instance default interface ethernet-1/49.0
+/ network-instance default interface ethernet-1/50.0
+/ network-instance default interface system0.0
+
+/ routing-policy {
+  policy all {
+    default-action {
+      policy-result accept
+    }
+  }
+}
+/ network-instance default protocols
+isis {
+    instance i1 {
+        admin-state enable
+        level-capability L1
+        net [49.0001.1921.6800.1002.00]
+        interface ethernet-1/49.0 {
+            admin-state enable
+            circuit-type point-to-point
+        }
+        interface ethernet-1/50.0 {
+            admin-state enable
+            circuit-type point-to-point
+        }
+        interface system0.0 {
+           admin-state enable
+           circuit-type point-to-point
+           passive true
+        }
+    }   
+}
+
+/ network-instance default protocols
+bgp {
+  admin-state enable
+  autonomous-system 100
+  router-id 10.0.0.2
+  group overlay {
+    export-policy all
+    import-policy all
+    peer-as 100
+    local-as {
+      as-number 100
+    }
+    afi-safi ipv4-unicast {
+      admin-state disable
+    }
+    afi-safi ipv6-unicast {
+      admin-state disable
+    }
+    afi-safi evpn {
+      admin-state enable
+    }
+  }
+  afi-safi evpn {
+      admin-state enable
+  }
+  # Route Reflector address
+  neighbor 10.0.0.4 {
+    peer-group overlay
+  }
+}
+-----------------------------------------------------------------
+#LEAF 3
+/ interface system0 {
+    admin-state enable
+    subinterface 0 {
+      ipv4 {
+          admin-state enable
+          address 10.0.0.3/32
+      }
+    }
+}
+/ interface ethernet-1/49 {
+  admin-state enable
+  subinterface 0 {
+    admin-state enable
+    ipv4 {
+        admin-state enable
+        unnumbered {
+            admin-state enable
+            interface system0.0
+        }
+    }
+  }
+}
+/ interface ethernet-1/50 {
+  admin-state enable
+  subinterface 0 {
+    admin-state enable
+    ipv4 {
+        admin-state enable
+        unnumbered {
+            admin-state enable
+            interface system0.0
+        }
+    }
+  }
+}
+/ network-instance default admin-state enable
+/ network-instance default interface ethernet-1/49.0
+/ network-instance default interface ethernet-1/50.0
+/ network-instance default interface system0.0
+
+/ routing-policy {
+  policy all {
+    default-action {
+      policy-result accept
+    }
+  }
+}
+/ network-instance default protocols
+isis {
+    instance i1 {
+        admin-state enable
+        level-capability L1
+        net [49.0001.1921.6800.1003.00]
+        interface ethernet-1/49.0 {
+            admin-state enable
+            circuit-type point-to-point
+        }
+        interface ethernet-1/50.0 {
+            admin-state enable
+            circuit-type point-to-point
+        }
+        interface system0.0 {
+           admin-state enable
+           circuit-type point-to-point
+           passive true
+        }
+    }   
+}
+
+/ network-instance default protocols
+bgp {
+  admin-state enable
+  autonomous-system 100
+  router-id 10.0.0.3
+  group overlay {
+    export-policy all
+    import-policy all
+    peer-as 100
+    local-as {
+      as-number 100
+    }
+    afi-safi ipv4-unicast {
+      admin-state disable
+    }
+    afi-safi ipv6-unicast {
+      admin-state disable
+    }
+    afi-safi evpn {
+      admin-state enable
+    }
+  }
+  afi-safi evpn {
+      admin-state enable
+  }
+  # Route Reflector address
+  neighbor 10.0.0.4 {
+    peer-group overlay
+  }
+}
+-----------------------------------------------------------------
+#SPINE 1
+/ interface system0 {
+    admin-state enable
+    subinterface 0 {
+      ipv4 {
+          admin-state enable
+          address 10.0.0.4/32
+      }
+    }
+}
+/ interface ethernet-1/1 {
+  admin-state enable
+  subinterface 0 {
+    admin-state enable
+    ipv4 {
+        admin-state enable
+        unnumbered {
+            admin-state enable
+            interface system0.0
+        }
+    }
+  }
+}
+/ interface ethernet-1/2 {
+  admin-state enable
+  subinterface 0 {
+    admin-state enable
+    ipv4 {
+        admin-state enable
+        unnumbered {
+            admin-state enable
+            interface system0.0
+        }
+    }
+  }
+}
+/ interface ethernet-1/3 {
+  admin-state enable
+  subinterface 0 {
+    admin-state enable
+    ipv4 {
+        admin-state enable
+        unnumbered {
+            admin-state enable
+            interface system0.0
+        }
+    }
+  }
+}
+/ network-instance default admin-state enable
+/ network-instance default interface ethernet-1/1.0
+/ network-instance default interface ethernet-1/2.0
+/ network-instance default interface ethernet-1/3.0
+/ network-instance default interface system0.0
+
+/ routing-policy {
+  policy all {
+    default-action {
+      policy-result accept
+    }
+  }
+}
+/ network-instance default protocols
+isis {
+    instance i1 {
+        admin-state enable
+        level-capability L1
+        net [49.0001.1921.6800.1004.00]
+        interface ethernet-1/1.0 {
+            admin-state enable
+            circuit-type point-to-point
+        }
+        interface ethernet-1/2.0 {
+            admin-state enable
+            circuit-type point-to-point
+        }
+        interface ethernet-1/3.0 {
+            admin-state enable
+            circuit-type point-to-point
+        }
+        interface system0.0 {
+           admin-state enable
+           circuit-type point-to-point
+           passive true
+        }
+    }   
+}
+
+/ network-instance default protocols
+bgp {
+  autonomous-system 100
+  router-id 10.0.0.4
+  group overlay {
+    admin-state enable
+    export-policy all
+    import-policy all
+    peer-as 100
+    local-as {
+      as-number 100
+    }
+    afi-safi ipv4-unicast {
+      admin-state disable
+    }
+    afi-safi ipv6-unicast {
+      admin-state disable
+    }
+    afi-safi evpn {
+      admin-state enable
+    }
+    route-reflector {
+      client true
+      cluster-id 10.0.0.4
+    }
+  }
+  afi-safi evpn {
+    admin-state enable
+  }
+  # Route Reflector's neighbors
+  neighbor 10.0.0.1 {
+    peer-group overlay
+  }
+  neighbor 10.0.0.2 {
+    peer-group overlay
+  }
+  neighbor 10.0.0.3 {
+    peer-group overlay
+  }
+}
+-----------------------------------------------------------------
+#SPINE 2
+/ interface system0 {
+    admin-state enable
+    subinterface 0 {
+      ipv4 {
+          admin-state enable
+          address 10.0.0.5/32
+      }
+    }
+}
+/ interface ethernet-1/1 {
+  admin-state enable
+  subinterface 0 {
+    admin-state enable
+    ipv4 {
+        admin-state enable
+        unnumbered {
+            admin-state enable
+            interface system0.0
+        }
+    }
+  }
+}
+/ interface ethernet-1/2 {
+  admin-state enable
+  subinterface 0 {
+    admin-state enable
+    ipv4 {
+        admin-state enable
+        unnumbered {
+            admin-state enable
+            interface system0.0
+        }
+    }
+  }
+}
+/ interface ethernet-1/3 {
+  admin-state enable
+  subinterface 0 {
+    admin-state enable
+    ipv4 {
+        admin-state enable
+        unnumbered {
+            admin-state enable
+            interface system0.0
+        }
+    }
+  }
+}
+/ network-instance default admin-state enable
+/ network-instance default interface ethernet-1/1.0
+/ network-instance default interface ethernet-1/2.0
+/ network-instance default interface ethernet-1/3.0
+/ network-instance default interface system0.0
+
+/ routing-policy {
+  policy all {
+    default-action {
+      policy-result accept
+    }
+  }
+}
+/ network-instance default protocols
+isis {
+    instance i1 {
+        admin-state enable
+        level-capability L1
+        net [49.0001.1921.6800.1005.00]
+        interface ethernet-1/1.0 {
+            admin-state enable
+            circuit-type point-to-point
+        }
+        interface ethernet-1/2.0 {
+            admin-state enable
+            circuit-type point-to-point
+        }
+        interface ethernet-1/3.0 {
+            admin-state enable
+            circuit-type point-to-point
+        }
+        interface system0.0 {
+           admin-state enable
+           circuit-type point-to-point
+           passive true
+        }
+    }   
+}

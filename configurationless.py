@@ -50,15 +50,15 @@ stub = SdkMgrServiceStub(channel)
 sub_stub = SdkNotificationServiceStub(channel)
 
 ## - GLOBAL VARIABLES
-SDK_MGR_FAILED = "kSdkMgrFailed"
-NOS_TYPE = "SRLinux"
+SDK_MGR_FAILED = 'kSdkMgrFailed'
+NOS_TYPE = 'SRLinux'
 NEIGHBOR_CHASSIS = 'neighbor_chassis'
 NEIGHBOR_INT = 'neighbor_int'
 LOCAL_INT = 'local_int'
 SYS_NAME = 'sys_name'
+UNDERLAY_PROTOCOL = 'OSPF' # can be changed to ISIS
 
 event_types = ['intf', 'nw_inst', 'lldp', 'route', 'cfg']
-lldp_neighbors = []
 
 #####################################################
 ####     METHODS TO CREATE THE NOTIFICATIONS     ####
@@ -96,13 +96,22 @@ def subscribeNotifications(stream_id):
 
 
 #####################################################
-####              AUXILIARY METHODS              ####
+####         AUXILIARY METHODS and classes       ####
 def containString(longer_word, smaller_word):
     return smaller_word in longer_word
 
+class State(object):
+    def __init__(self):
+        self.lldp_neighbors = []
+        self.underlay_protocol = ""
+
+    def __str__(self):
+        return str(self.__class__) + ": " + str(self.__dict__)
+
+
 #####################################################
 ####            THE AGENT'S MAIN LOGIC           ####
-def handle_LldpNeighborNotification(notification: Notification) -> None:
+def handle_LldpNeighborNotification(notification: Notification, state) -> None:
     interface_name = str(notification.key.interface_name)
     system_name = str(notification.data.system_description) 
     if containString(system_name, NOS_TYPE):
@@ -117,21 +126,22 @@ def handle_LldpNeighborNotification(notification: Notification) -> None:
 
     ## - Notification is CREATE (value: 0)
     if notification.op == 0:
-        logging.info(f"[NEW NEIGHBOR] :: {interface_name}, {system_name}, {source_chassis}, {port_id}")
-        lldp_neighbors.append(neighbor)
+        logging.info(f"[NEW NEIGHBOR] :: {source_chassis}, {system_name}, {port_id}, {interface_name}")
+        state.lldp_neighbors.append(neighbor)
         # TODO logic -> update topology
     ## - Notification is DELETE (value: 2)
     elif notification.op == 2:
-        for i in range(len(lldp_neighbors)):
-            if lldp_neighbors[i] == neighbor:
-                lldp_neighbors.remove(lldp_neighbors[i])
+        for i in state.lldp_neighbors[:]:
+            if i[LOCAL_INT] == neighbor[LOCAL_INT] and i[NEIGHBOR_CHASSIS] == neighbor[NEIGHBOR_CHASSIS]:
+                logging.info(f"[REMOVED NEIGHBOR] :: {i[NEIGHBOR_CHASSIS]}, {i[SYS_NAME]}, {i[NEIGHBOR_INT]}, {i[LOCAL_INT]}")
+                state.lldp_neighbors.remove(i)
                 # TODO logic -> update topology
     ## - Notification is CHANGE (value: 1)
     else:
         pass
         # TODO
     
-def handleNotification(notification: Notification)-> None:
+def handleNotification(notification: Notification, state)-> None:
     #if notification.HasField("config"):
     #    logging.info("Implement config notification handling if needed")
     #if notification.HasField("intf"):
@@ -139,7 +149,7 @@ def handleNotification(notification: Notification)-> None:
     #if notification.HasField("nw_inst"):
     #    handle_NetworkInstanceNotification(notification.nw_inst)
     if notification.HasField('lldp_neighbor'):
-        handle_LldpNeighborNotification(notification.lldp_neighbor)
+        handle_LldpNeighborNotification(notification.lldp_neighbor, state)
     #if notification.HasField("route"):
     #    logging.info("Implement route notification handling if needed")
     return False
@@ -170,15 +180,17 @@ def Run():
         notification_stream_response = sub_stub.NotificationStream(notification_stream_request, metadata=metadata)
         
         ## - Agent's main logic: upon receiving notifications evolve the system according with the new topology.
+        state = State()
+        state.underlay_protocol = UNDERLAY_PROTOCOL
         count = 0
         for r in notification_stream_response:
             count += 1
-            logging.info(f"[RECEIVED NOTIFICATION] :: Number {count} \n{r.notification}")
+            #logging.info(f"[RECEIVED NOTIFICATION] :: Number {count} \n{r.notification}")
             for obj in r.notification:
                 if obj.HasField('config') and obj.config.key.js_path == ".commit.end":
-                    logging.info('TO DO -commit.end config')
+                    logging.info('[TO DO] :: -commit.end config')
                 else:
-                    handleNotification(obj) # may add field 'state'
+                    handleNotification(obj, state) # may add field 'state'
 
     except grpc._channel._Rendezvous as err:
         logging.info(f"[EXITING NOW] :: {str(err)}")

@@ -1,0 +1,646 @@
+-----------------------------------------------------------------
+-----------------------------------------------------------------
+-----------------------------------------------------------------
+-----------------------------------------------------------------
+-----------------------------------------------------------------
+# / info interface ethernet-1/1 subinterface 0 ipv6 router-advertisement
+# / show network-instance default protocols ospf database summary
+# / interface ethernet-1/1 subinterface 0 ipv6 address 2001:db8:85a3::7348/64
+# Show interfaces: / show interface
+# Show routing tables: / show network-instance default route-table ipv6-unicast summary
+# Ping: ping 10.0.0.1 network-instance default
+# Ping Link-Local: ping fe80::1835:8ff:feff:1%e1-49.0
+# Show Mac: / info from state interface ethernet-1/1 ethernet hw-mac-address
+# Show IPv6 neighbors: / show arpnd neighbors ipv6-address <IPv6>
+# Show EVPN routes: / show network-instance default protocols bgp routes evpn route-type 3 summary
+# Show iBGP neighbors: / show network-instance default protocols bgp neighbor
+-----------------------------------------------------------------
+# LEAF 1
+/ interface ethernet-1/49 {
+  admin-state enable
+  subinterface 0 {
+    admin-state enable
+    ipv6 {
+      admin-state enable
+      router-advertisement {
+        router-role {
+          admin-state enable
+        }
+      }
+    }
+  }
+}
+/ interface ethernet-1/50 {
+  admin-state enable
+  subinterface 0 {
+    admin-state enable
+    ipv6 {
+      admin-state enable
+      router-advertisement {
+        router-role {
+          admin-state enable
+        }
+      }
+    }
+  }
+}
+/ interface system0 {
+  admin-state enable
+  subinterface 0 {
+    admin-state enable
+    ipv6 {
+      admin-state enable
+      address 2001:db8::1111/128
+    }
+  }
+}
+/ network-instance default admin-state enable
+/ network-instance default interface ethernet-1/49.0
+/ network-instance default interface ethernet-1/50.0
+/ network-instance default interface system0.0
+
+/ network-instance default router-id 1.1.1.1
+
+/ routing-policy {
+  policy all {
+    default-action {
+      policy-result accept
+    }
+  }
+}
+#OSPFv3
+/ network-instance default protocols
+ospf {
+    instance default {
+        admin-state enable
+        version ospf-v3
+        address-family ipv6-unicast admin-state enable
+        area 0.0.0.0 {
+            interface ethernet-1/49.0 {
+                admin-state enable
+                interface-type broadcast
+            }
+            interface ethernet-1/50.0 {
+                admin-state enable
+                interface-type broadcast
+            }
+            interface system0.0 {
+                admin-state enable
+            }
+        }
+    }
+}
+
+
+/ network-instance default protocols
+bgp {
+  admin-state enable
+  autonomous-system 100
+  router-id 1.1.1.1
+  group overlay {
+    export-policy all
+    import-policy all
+    peer-as 100
+    local-as {
+      as-number 100
+    }
+    afi-safi ipv4-unicast {
+      admin-state disable
+    }
+    afi-safi ipv6-unicast {
+      admin-state disable
+    }
+    afi-safi evpn {
+      admin-state enable
+    }
+  }
+  afi-safi evpn {
+      admin-state enable
+  }
+  # Route Reflector address
+  neighbor 4.4.4.4 {
+    peer-group overlay
+  }
+}
+/ tunnel-interface vxlan1 {
+  vxlan-interface 1 {
+    type bridged
+    ingress {
+      vni 11
+    }
+  }
+}
+/ interface ethernet-1/1 {
+  admin-state enable
+  subinterface 0 {
+    admin-state enable
+    type bridged
+  }
+}
+/ network-instance vrf-blue {
+  admin-state enable
+  type mac-vrf
+  interface ethernet-1/1.0 {
+  }
+  vxlan-interface vxlan1.1 {
+  }
+  protocols {
+    bgp-evpn {
+      bgp-instance 1 {
+        admin-state enable
+        vxlan-interface vxlan1.1
+        evi 111
+      }
+    }
+    bgp-vpn {
+      bgp-instance 1 {
+        route-target {
+          export-rt target:100:111
+          import-rt target:100:111
+        }
+      }
+    }
+  }
+}
+
+-----------------------------------------------------------------
+# LEAF 2
+/ interface ethernet-1/49 {
+  admin-state enable
+  subinterface 0 {
+    admin-state enable
+    ipv6 {
+      admin-state enable
+      router-advertisement {
+        router-role {
+          admin-state enable
+        }
+      }
+    }
+  }
+}
+/ interface ethernet-1/50 {
+  admin-state enable
+  subinterface 0 {
+    admin-state enable
+    ipv6 {
+      admin-state enable
+      router-advertisement {
+        router-role {
+          admin-state enable
+        }
+      }
+    }
+  }
+}
+/ interface system0 {
+  admin-state enable
+  subinterface 0 {
+    admin-state enable
+    ipv6 {
+      admin-state enable
+      address 2001:db8::2222/128
+    }
+  }
+}
+/ network-instance default admin-state enable
+/ network-instance default interface ethernet-1/49.0
+/ network-instance default interface ethernet-1/50.0
+/ network-instance default interface system0.0
+
+/ network-instance default router-id 2.2.2.2
+
+/ routing-policy {
+  policy all {
+    default-action {
+      policy-result accept
+    }
+  }
+}
+/ network-instance default protocols
+ospf {
+    instance default {
+        admin-state enable
+        version ospf-v3
+        address-family ipv6-unicast admin-state enable
+        area 0.0.0.0 {
+            interface ethernet-1/49.0 {
+                admin-state enable
+                interface-type broadcast
+            }
+            interface ethernet-1/50.0 {
+                admin-state enable
+                interface-type broadcast
+            }
+            interface system0.0 {
+                admin-state enable
+            }
+        }
+    }
+}
+
+
+/ network-instance default protocols
+bgp {
+  autonomous-system 100
+  router-id 2.2.2.2
+  group overlay {
+    admin-state enable
+    export-policy all
+    import-policy all
+    peer-as 100
+    local-as {
+      as-number 100
+    }
+    afi-safi ipv4-unicast {
+      admin-state disable
+    }
+    afi-safi ipv6-unicast {
+      admin-state disable
+    }
+    afi-safi evpn {
+      admin-state enable
+    }
+  }
+  afi-safi evpn {
+    admin-state enable
+  }
+  # Route Reflector address
+  neighbor 4.4.4.4 {
+    peer-group overlay
+  }
+}
+/ tunnel-interface vxlan1 {
+  vxlan-interface 1 {
+    type bridged
+    ingress {
+      vni 11
+    }
+  }
+}
+/ interface ethernet-1/1 {
+  subinterface 0 {
+    type bridged
+  }
+}
+/ network-instance vrf-blue {
+  type mac-vrf
+  interface ethernet-1/1.0 {
+  }
+  vxlan-interface vxlan1.1 {
+  }
+  protocols {
+    bgp-evpn {
+      bgp-instance 1 {
+        vxlan-interface vxlan1.1
+        evi 111
+      }
+    }
+    bgp-vpn {
+      bgp-instance 1 {
+        route-target {
+          export-rt target:100:111
+          import-rt target:100:111
+        }
+      }
+    }
+  }
+}
+
+
+-----------------------------------------------------------------
+# LEAF 3
+/ interface ethernet-1/49 {
+  admin-state enable
+  subinterface 0 {
+    admin-state enable
+    ipv6 {
+      admin-state enable
+      router-advertisement {
+        router-role {
+          admin-state enable
+        }
+      }
+    }
+  }
+}
+/ interface ethernet-1/50 {
+  admin-state enable
+  subinterface 0 {
+    admin-state enable
+    ipv6 {
+      admin-state enable
+      router-advertisement {
+        router-role {
+          admin-state enable
+        }
+      }
+    }
+  }
+}
+/ interface system0 {
+  admin-state enable
+  subinterface 0 {
+    admin-state enable
+    ipv6 {
+      admin-state enable
+      address 2001:db8::3333/128
+    }
+  }
+}
+/ network-instance default admin-state enable
+/ network-instance default interface ethernet-1/49.0
+/ network-instance default interface ethernet-1/50.0
+/ network-instance default interface system0.0
+
+/ network-instance default router-id 3.3.3.3
+
+/ routing-policy {
+  policy all {
+    default-action {
+      policy-result accept
+    }
+  }
+}
+/ network-instance default protocols
+ospf {
+    instance default {
+        admin-state enable
+        version ospf-v3
+        address-family ipv6-unicast admin-state enable
+        area 0.0.0.0 {
+            interface ethernet-1/49.0 {
+                admin-state enable
+                interface-type broadcast
+            }
+            interface ethernet-1/50.0 {
+                admin-state enable
+                interface-type broadcast
+            }
+            interface system0.0 {
+                admin-state enable
+            }
+        }
+    }
+}
+/ network-instance default protocols
+bgp {
+  autonomous-system 100
+  router-id 3.3.3.3
+  group overlay {
+    admin-state enable
+    export-policy all
+    import-policy all
+    peer-as 100
+    local-as {
+      as-number 100
+    }
+    afi-safi ipv4-unicast {
+      admin-state disable
+    }
+    afi-safi ipv6-unicast {
+      admin-state disable
+    }
+    afi-safi evpn {
+      admin-state enable
+    }
+  }
+  afi-safi evpn {
+    admin-state enable
+  }
+  # Route Reflector address
+  neighbor 4.4.4.4 {
+    peer-group overlay
+  }
+}
+-----------------------------------------------------------------
+# SPINE 1
+/ interface ethernet-1/1 {
+  admin-state enable
+  subinterface 0 {
+    admin-state enable
+    ipv6 {
+      admin-state enable
+      router-advertisement {
+        router-role {
+          admin-state enable
+        }
+      }
+    }
+  }
+}
+/ interface ethernet-1/2 {
+  admin-state enable
+  subinterface 0 {
+    admin-state enable
+    ipv6 {
+      admin-state enable
+      router-advertisement {
+        router-role {
+          admin-state enable
+        }
+      }
+    }
+  }
+}
+/ interface ethernet-1/3 {
+  admin-state enable
+  subinterface 0 {
+    admin-state enable
+    ipv6 {
+      admin-state enable
+      router-advertisement {
+        router-role {
+          admin-state enable
+        }
+      }
+    }
+  }
+}
+/ interface system0 {
+  admin-state enable
+  subinterface 0 {
+    admin-state enable
+    ipv6 {
+      admin-state enable
+      address 2001:db8::4444/128
+    }
+  }
+}
+/ network-instance default admin-state enable
+/ network-instance default interface ethernet-1/1.0
+/ network-instance default interface ethernet-1/2.0
+/ network-instance default interface ethernet-1/3.0
+/ network-instance default interface system0.0
+
+/ network-instance default router-id 4.4.4.4
+
+/ routing-policy {
+  policy all {
+    default-action {
+      policy-result accept
+    }
+  }
+}
+#OSPFv3
+/ network-instance default protocols
+ospf {
+    instance default {
+        admin-state enable
+        version ospf-v3
+        address-family ipv6-unicast admin-state enable
+        area 0.0.0.0 {
+            interface ethernet-1/1.0 {
+                admin-state enable
+                interface-type broadcast
+            }
+            interface ethernet-1/2.0 {
+                admin-state enable
+                interface-type broadcast
+            }
+            interface ethernet-1/3.0 {
+                admin-state enable
+                interface-type broadcast
+            }
+            interface system0.0 {
+                admin-state enable
+            }
+        }
+    }
+}
+/ network-instance default protocols
+bgp {
+  autonomous-system 100
+  router-id 4.4.4.4
+  group overlay {
+    admin-state enable
+    export-policy all
+    import-policy all
+    peer-as 100
+    local-as {
+      as-number 100
+    }
+    afi-safi ipv4-unicast {
+      admin-state disable
+    }
+    afi-safi ipv6-unicast {
+      admin-state disable
+    }
+    afi-safi evpn {
+      admin-state enable
+    }
+    route-reflector {
+      client true
+      cluster-id 4.4.4.4
+    }
+  }
+  afi-safi evpn {
+    admin-state enable
+  }
+  # Route Reflector's neighbors
+  neighbor 1.1.1.1 {
+    peer-group overlay
+  }
+  neighbor 2.2.2.2 {
+    peer-group overlay
+  }
+  neighbor 3.3.3.3 {
+    peer-group overlay
+  }
+}
+
+-----------------------------------------------------------------
+# SPINE 2
+/ interface ethernet-1/1 {
+  admin-state enable
+  subinterface 0 {
+    admin-state enable
+    ipv6 {
+      admin-state enable
+      router-advertisement {
+        router-role {
+          admin-state enable
+        }
+      }
+    }
+  }
+}
+/ interface ethernet-1/2 {
+  admin-state enable
+  subinterface 0 {
+    admin-state enable
+    ipv6 {
+      admin-state enable
+      router-advertisement {
+        router-role {
+          admin-state enable
+        }
+      }
+    }
+  }
+}
+/ interface ethernet-1/3 {
+  admin-state enable
+  subinterface 0 {
+    admin-state enable
+    ipv6 {
+      admin-state enable
+      router-advertisement {
+        router-role {
+          admin-state enable
+        }
+      }
+    }
+  }
+}
+/ interface system0 {
+  admin-state enable
+  subinterface 0 {
+    admin-state enable
+    ipv6 {
+      admin-state enable
+      address 2001:db8::5555/128
+    }
+  }
+}
+/ network-instance default admin-state enable
+/ network-instance default interface ethernet-1/1.0
+/ network-instance default interface ethernet-1/2.0
+/ network-instance default interface ethernet-1/3.0
+/ network-instance default interface system0.0
+
+/ network-instance default router-id 5.5.5.5
+
+/ routing-policy {
+  policy all {
+    default-action {
+      policy-result accept
+    }
+  }
+}
+#OSPFv3
+/ network-instance default protocols
+ospf {
+    instance default {
+        admin-state enable
+        version ospf-v3
+        address-family ipv6-unicast admin-state enable
+        area 0.0.0.0 {
+            interface ethernet-1/1.0 {
+                admin-state enable
+                interface-type broadcast
+            }
+            interface ethernet-1/2.0 {
+                admin-state enable
+                interface-type broadcast
+            }
+            interface ethernet-1/3.0 {
+                admin-state enable
+                interface-type broadcast
+            }
+            interface system0.0 {
+                admin-state enable
+            }
+        }
+    }
+}
