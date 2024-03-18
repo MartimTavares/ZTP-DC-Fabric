@@ -10,6 +10,7 @@
 # Show routing tables: / show network-instance default route-table ipv6-unicast summary
 # Ping: ping 10.0.0.1 network-instance default
 # Ping Link-Local: ping fe80::1835:8ff:feff:1%e1-49.0
+# Ping from a server: docker exec -it clab-evpn1-server11 ping 192.168.0.3
 # Show Mac: / info from state interface ethernet-1/1 ethernet hw-mac-address
 # Show IPv6 neighbors: / show arpnd neighbors ipv6-address <IPv6>
 # Show EVPN routes: / show network-instance default protocols bgp routes evpn route-type 3 summary

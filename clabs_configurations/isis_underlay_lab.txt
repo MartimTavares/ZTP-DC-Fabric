@@ -6,11 +6,15 @@
 -----------------------------------------------------------------
 # containerlab deploy -t dc.clab.yaml
 # Entering in the machine: docker exec -it clab-dc-leaf1 sr_cli
+# admin: NokiaSrl1!
+# chmod a+rw <file_name>
+# ip netns exec srbase-mgmt bash
+# tcpdump -i any -n "port 57400"
+
 # / show network-instance default protocols isis interface
 # / show network-instance default protocols isis interface ethernet-1/49.0 detail
 # / show network-instance default protocols isis adjacency
 # / show network-instance default route-table ipv4-unicast summary
-
 # / info from state network-instance default protocols isis instance i1
 
 # Stop a node
@@ -18,6 +22,8 @@
 
 # State from LLDP neighbors
 # / info from state system lldp interface *
+# info from state interface * transceiver oper-state
+# info from state interface * transceiver tx-laser
 
 # Check configuration as json
 # / network-instance default protocols isis instance i1
@@ -35,6 +41,7 @@
 / interface system0 {
     admin-state enable
     subinterface 0 {
+      admin-state enable
       ipv4 {
           admin-state enable
           address 10.0.0.1/32

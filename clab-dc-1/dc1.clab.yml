@@ -13,82 +13,87 @@ topology:
       # leaf configurations, e.g: set / interface ethernet-1/49 subinterface 0 ipv4 address 192.168.11.1/30
       #startup-config: configs/leaf1.cfg
       binds:
-        # Executable File:
+        ## - Executable File:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
-        # YANG Models:
+        ## - YANG Models:
         #- /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
-        # Configuration File:
+        ## - Configuration File:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
-        # Python Script:
+        ## - Python Script:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.py:/etc/opt/srlinux/appmgr/user_agents/configurationless.py:rw
+        ## - Input file to originate CA
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/clab-dc-1/clab-dc1/.tls/ca/ca.pem:/ca.pem:rw
       exec:
         - chmod +r /etc/opt/srlinux/appmgr/user_agents/
         - chmod +x /usr/local/bin/configurationless.sh
-        #- chmod -R 755 /home/srlinux/.cache/pip
     leaf2:
       kind: srl
       type: ixrd2
       binds:
-        # Executable File:
+        ## - Executable File:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
-        # YANG Models:
+        ## - YANG Models:
         #- /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
-        # Configuration File:
+        ## - Configuration File:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
-        # Python Script:
+        ## - Python Script:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.py:/etc/opt/srlinux/appmgr/user_agents/configurationless.py:rw
+        ## - Input file to originate CA
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/clab-dc-1/clab-dc1/.tls/ca/ca.pem:/ca.pem:rw
       exec:
         - chmod +r /etc/opt/srlinux/appmgr/user_agents/
         - chmod +x /usr/local/bin/configurationless.sh
-        #- chmod -R 755 /home/srlinux/.cache/pip
     leaf3:
       kind: srl
       type: ixrd2
       binds:
-        # Executable File:
+        ## - Executable File:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
-        # YANG Models:
+        ## - YANG Models:
         #- /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
-        # Configuration File:
+        ## - Configuration File:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
-        # Python Script:
+        ## - Python Script:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.py:/etc/opt/srlinux/appmgr/user_agents/configurationless.py:rw
+        ## - Input file to originate CA
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/clab-dc-1/clab-dc1/.tls/ca/ca.pem:/ca.pem:rw
       exec:
         - chmod +r /etc/opt/srlinux/appmgr/user_agents/
         - chmod +x /usr/local/bin/configurationless.sh
-        #- chmod -R 755 /home/srlinux/.cache/pip
     spine1:
       kind: srl
       type: ixrd3
       binds:
-        # Executable File:
+        ## - Executable File:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
-        # YANG Models:
+        ## - YANG Models:
         #- /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
-        # Configuration File:
+        ## - Configuration File:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
-        # Python Script:
+        ## - Python Script:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.py:/etc/opt/srlinux/appmgr/user_agents/configurationless.py:rw
+        ## - Input file to originate CA
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/clab-dc-1/clab-dc1/.tls/ca/ca.pem:/ca.pem:rw
       exec:
         - chmod +r /etc/opt/srlinux/appmgr/user_agents/
         - chmod +x /usr/local/bin/configurationless.sh
-        #- chmod -R 755 /home/srlinux/.cache/pip
     spine2:
       kind: srl
       type: ixrd3
       binds:
-        # Executable File:
+        ## - Executable File:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
-        # YANG Models:
+        ## - YANG Models:
         #- /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
-        # Configuration File:
+        ## - Configuration File:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
-        # Python Script:
+        ## - Python Script:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.py:/etc/opt/srlinux/appmgr/user_agents/configurationless.py:rw
-      exec: 
+        ## - Input file to originate CA
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/clab-dc-1/clab-dc1/.tls/ca/ca.pem:/ca.pem:rw
+      exec:
         - chmod +r /etc/opt/srlinux/appmgr/user_agents/
         - chmod +x /usr/local/bin/configurationless.sh
-        #- chmod -R 755 /home/srlinux/.cache/pip
     server11:
       kind: linux
       exec:

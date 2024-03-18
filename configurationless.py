@@ -49,7 +49,13 @@ stub = SdkMgrServiceStub(channel)
 ## - Client stub for notificationStreamRequests
 sub_stub = SdkNotificationServiceStub(channel)
 
+
 ## - GLOBAL VARIABLES
+CLONE_NEWNET = 0x40000000
+SR_CA = '/ca.pem'
+SR_USER = 'admin'
+SR_PASSWORD = 'NokiaSrl1!'
+GNMI_PORT = '57400'
 SDK_MGR_FAILED = 'kSdkMgrFailed'
 NOS_TYPE = 'SRLinux'
 NEIGHBOR_CHASSIS = 'neighbor_chassis'
@@ -59,6 +65,7 @@ SYS_NAME = 'sys_name'
 UNDERLAY_PROTOCOL = 'OSPF' # can be changed to ISIS
 
 event_types = ['intf', 'nw_inst', 'lldp', 'route', 'cfg']
+
 
 #####################################################
 ####     METHODS TO CREATE THE NOTIFICATIONS     ####
@@ -100,6 +107,7 @@ def subscribeNotifications(stream_id):
 def containString(longer_word, smaller_word):
     return smaller_word in longer_word
 
+
 class State(object):
     def __init__(self):
         self.lldp_neighbors = []
@@ -107,6 +115,30 @@ class State(object):
 
     def __str__(self):
         return str(self.__class__) + ": " + str(self.__dict__)
+
+
+def binaryToDecimal(binary):
+    ## - Convert binary string to decimal integer
+    decimal = int(binary, 2)
+    return decimal
+
+
+def macToBits(mac_address:str):
+    mac_components = mac_address.split(':')
+    binary_components = [bin(int(comp, 16))[2:].zfill(8) for comp in mac_components]
+    mac_binary = ''.join(binary_components)
+    ## - Remove the leftmost 16 bits to have only 32
+    bit32_binary = mac_binary[16:]
+    return bit32_binary
+
+
+def bitsToIpv4(binary):
+    ## - Split the binary string into four equal parts
+    octets = [binary[i:i+8] for i in range(0, len(binary), 8)]
+    ## - Convert each octet from binary to decimal
+    decimal_octets = [binaryToDecimal(octet) for octet in octets]
+    ipv4_address = '.'.join(map(str, decimal_octets))
+    return ipv4_address
 
 
 #####################################################
@@ -141,6 +173,7 @@ def handle_LldpNeighborNotification(notification: Notification, state) -> None:
         pass
         # TODO
     
+
 def handleNotification(notification: Notification, state)-> None:
     #if notification.HasField("config"):
     #    logging.info("Implement config notification handling if needed")
@@ -154,7 +187,11 @@ def handleNotification(notification: Notification, state)-> None:
     #    logging.info("Implement route notification handling if needed")
     return False
 
-def Run():
+
+#####################################################
+####       MAIN FUNCTIONS TO INITIALIZE THE      ####
+####            AGENT AND THE LOG FILES          ####
+def Run(hostname):
     ## - Register Application with the NDK manager
     register_request = AgentRegistrationRequest()
     #register_request.agent_liveliness=10 ## ????
@@ -182,15 +219,38 @@ def Run():
         ## - Agent's main logic: upon receiving notifications evolve the system according with the new topology.
         state = State()
         state.underlay_protocol = UNDERLAY_PROTOCOL
-        count = 0
-        for r in notification_stream_response:
-            count += 1
-            #logging.info(f"[RECEIVED NOTIFICATION] :: Number {count} \n{r.notification}")
-            for obj in r.notification:
-                if obj.HasField('config') and obj.config.key.js_path == ".commit.end":
-                    logging.info('[TO DO] :: -commit.end config')
-                else:
-                    handleNotification(obj, state) # may add field 'state'
+
+        ## - gNMI Server connection variables: default port for gNMI server is 57400
+        gnmic_host = (hostname, GNMI_PORT) #172.20.20.11, 'clab-dc1-leaf1'
+        with gNMIclient(target=gnmic_host, path_cert=SR_CA, username=SR_USER, password=SR_PASSWORD, debug=True) as gc:
+            ## - Initial Router ID configuration
+            result = gc.get(path=["/platform/chassis/hw-mac-address"], encoding="json_ietf")
+            #for e in [e for i in result['notification'] if 'update' in i.keys() for e in i['update'] if 'val' in e.keys()]:
+            sys_mac = result['notification'][0]['update'][0]['val']
+                
+            logging.info('[SYSTEM MAC] :: ' + f'{sys_mac}')
+            router_id_ipv4 = bitsToIpv4(macToBits(sys_mac))
+                
+            updates = [
+                ('/network-instance[name=default]', {'admin-state':'enable'}),
+                #('/network-instance[name=default]/interface[name=system0.0]', {'admin-state':'enable'}), 
+                ('/interface[name=system0]', {'admin-state':'enable'}),
+                #('/interface[name=system0]/subinterface[index=0]', {'admin-state':'enable'}),
+                ('/interface[name=system0]/subinterface[index=0]', {"ipv4": {"address": [{"ip-prefix": "10.0.0.1/32"}]}, "admin-state":"enable"})
+            ] #/ network-instance default interface system0.0
+            result = gc.set(update=updates, encoding="json_ietf")
+            logging.info('[gNMIc] :: ' + f'{result}')
+            #if response: logging.info('[SYSTEM IP] :: ' + f'{router_id_ipv4}')
+
+            count = 0
+            for r in notification_stream_response:
+                count += 1
+                #logging.info(f"[RECEIVED NOTIFICATION] :: Number {count} \n{r.notification}")
+                for obj in r.notification:
+                    if obj.HasField('config') and obj.config.key.js_path == ".commit.end":
+                        logging.info('[TO DO] :: -commit.end config')
+                    else:
+                        handleNotification(obj, state) # may add field 'state'
 
     except grpc._channel._Rendezvous as err:
         logging.info(f"[EXITING NOW] :: {str(err)}")
@@ -204,15 +264,8 @@ def Run():
             sys.exit()
         return True
     sys.exit()
-    """
-        try:
-            for r in notification_stream_response:
-                count += 1
-                logging.info(f"Count :: {count}  NOTIFICATION:: \n{r.notification}")
-                for obj in r.notification:
-                    Handle_Notification(obj)
 
-"""
+
 def Exit_Gracefully(signum, frame):
     logging.info(f"[SIGNAL CAUGHT] :: {signum}\n will unregister fib_agent.")
     try:
@@ -222,6 +275,7 @@ def Exit_Gracefully(signum, frame):
     except grpc._channel._Rendezvous as err:
         logging.info(f"[EXCEPTION] :: {err}")
         sys.exit()
+
 
 def initialLoggingSetup(hostname):
     stdout_dir = '/var/log/srlinux/stdout'
@@ -236,10 +290,16 @@ def initialLoggingSetup(hostname):
     logging.info("[START TIME] :: {}".format(datetime.datetime.now()))
 
 
-#####################################################
-####        MAIN FUNCTION TO INITIALIZE THE      ####
-####            AGENT AND THE LOG FILES          ####
 if __name__ == '__main__':
+    ## - Change the network namespace to the approriate one
+    ns_path = '/var/run/netns/srbase-mgmt'
+    ns_fd = os.open(ns_path, os.O_RDONLY)
+    libc = ctypes.CDLL('libc.so.6')
+    setns = libc.setns
+    setns.argtypes = [ctypes.c_int, ctypes.c_int]
+    if setns(ns_fd, CLONE_NEWNET) == -1:
+        raise Exception("Failed to set network namespace")
+
     hostname = socket.gethostname()
     ## - SIGTERM is the signal that is typically used to administratively terminate a process.
     ## - This signal is sent by the process to terminate (gracefully) this process.
@@ -248,7 +308,7 @@ if __name__ == '__main__':
     ## - Define path to log file: /var/log/srlinux/stdout
     initialLoggingSetup(hostname)
     ## - Run the function that contains the agent's logic
-    if Run():
+    if Run(hostname):
         logging.info(f"[REGISTRATION] :: Agent unregistered and routes were withdrawn.")
     else:
         logging.info(f"[EXCEPTION] :: Some exception caught.")
