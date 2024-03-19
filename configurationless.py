@@ -227,21 +227,43 @@ def Run(hostname):
             result = gc.get(path=["/platform/chassis/hw-mac-address"], encoding="json_ietf")
             #for e in [e for i in result['notification'] if 'update' in i.keys() for e in i['update'] if 'val' in e.keys()]:
             sys_mac = result['notification'][0]['update'][0]['val']
-                
             logging.info('[SYSTEM MAC] :: ' + f'{sys_mac}')
+            #TODO IS-IS System ID generator!!!
             router_id_ipv4 = bitsToIpv4(macToBits(sys_mac))
-                
+            sys0_conf = {
+                        'subinterface' : [
+                            {
+                            'index' : '0',
+                            # /interface[name=system]/subinterface[index=0]
+                            'ipv4' : {
+                                'address' : [
+                                    {'ip-prefix' : f'{router_id_ipv4}/32'}
+                                ],
+                                'admin-state' : 'enable'
+                            }, 
+                            'admin-state' : 'enable'
+                            #
+                            }
+                        ],
+                        'admin-state' : 'enable'
+                        } 
+            net_inst = {
+                       'admin-state' : 'enable',
+                       'interface' : [
+                           {'name' : 'system0.0'}
+                       ]  
+                       }
             updates = [
-                ('/network-instance[name=default]', {'admin-state':'enable'}),
-                #('/network-instance[name=default]/interface[name=system0.0]', {'admin-state':'enable'}), 
-                ('/interface[name=system0]', {'admin-state':'enable'}),
-                #('/interface[name=system0]/subinterface[index=0]', {'admin-state':'enable'}),
-                ('/interface[name=system0]/subinterface[index=0]', {"ipv4": {"address": [{"ip-prefix": "10.0.0.1/32"}]}, "admin-state":"enable"})
-            ] #/ network-instance default interface system0.0
+                ('/network-instance[name=default]', net_inst),
+                ('/interface[name=system0]', sys0_conf)
+            ] 
             result = gc.set(update=updates, encoding="json_ietf")
             logging.info('[gNMIc] :: ' + f'{result}')
-            #if response: logging.info('[SYSTEM IP] :: ' + f'{router_id_ipv4}')
+            for conf in result['response']:
+                if str(conf['path']) == 'interface[name=system0]':
+                    logging.info('[SYSTEM IP] :: ' + f'{router_id_ipv4}')
 
+            ## - New notifications incoming
             count = 0
             for r in notification_stream_response:
                 count += 1
