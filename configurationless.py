@@ -62,7 +62,10 @@ NEIGHBOR_CHASSIS = 'neighbor_chassis'
 NEIGHBOR_INT = 'neighbor_int'
 LOCAL_INT = 'local_int'
 SYS_NAME = 'sys_name'
-UNDERLAY_PROTOCOL = 'OSPF' # can be changed to ISIS
+UNDERLAY_PROTOCOL = 'IS-IS' # can be changed to OSPFv3
+AREA_ID = '49.0001'
+ISIS_INSTANCE = 'i1'
+ISIS_LEVEL_CAPABILITY = 'L1'
 
 event_types = ['intf', 'nw_inst', 'lldp', 'route', 'cfg']
 
@@ -112,6 +115,9 @@ class State(object):
     def __init__(self):
         self.lldp_neighbors = []
         self.underlay_protocol = ""
+        self.net_id = ""
+        self.sys_ip = ""
+        self.mac = ""
 
     def __str__(self):
         return str(self.__class__) + ": " + str(self.__dict__)
@@ -127,18 +133,26 @@ def macToBits(mac_address:str):
     mac_components = mac_address.split(':')
     binary_components = [bin(int(comp, 16))[2:].zfill(8) for comp in mac_components]
     mac_binary = ''.join(binary_components)
-    ## - Remove the leftmost 16 bits to have only 32
-    bit32_binary = mac_binary[16:]
-    return bit32_binary
+    return mac_binary
 
 
 def bitsToIpv4(binary):
+    ## - Remove the leftmost 16 bits to have only 32
+    bit32_binary = binary[16:]
     ## - Split the binary string into four equal parts
-    octets = [binary[i:i+8] for i in range(0, len(binary), 8)]
+    octets = [bit32_binary[i:i+8] for i in range(0, len(bit32_binary), 8)]
     ## - Convert each octet from binary to decimal
     decimal_octets = [binaryToDecimal(octet) for octet in octets]
     ipv4_address = '.'.join(map(str, decimal_octets))
     return ipv4_address
+
+
+def macToSYSID(mac_address:str):
+    # Remove dots from the MAC address
+    mac_address = mac_address.replace(':', '')
+    # Divide the MAC address into three parts and join them with dots
+    sys_id = '.'.join([mac_address[i:i+4] for i in range(0, len(mac_address), 4)])
+    return sys_id
 
 
 #####################################################
@@ -223,13 +237,21 @@ def Run(hostname):
         ## - gNMI Server connection variables: default port for gNMI server is 57400
         gnmic_host = (hostname, GNMI_PORT) #172.20.20.11, 'clab-dc1-leaf1'
         with gNMIclient(target=gnmic_host, path_cert=SR_CA, username=SR_USER, password=SR_PASSWORD, debug=True) as gc:
-            ## - Initial Router ID configuration
+            ## - Initial Router ID and routing-policy configurations
             result = gc.get(path=["/platform/chassis/hw-mac-address"], encoding="json_ietf")
             #for e in [e for i in result['notification'] if 'update' in i.keys() for e in i['update'] if 'val' in e.keys()]:
             sys_mac = result['notification'][0]['update'][0]['val']
+            state.mac = sys_mac
             logging.info('[SYSTEM MAC] :: ' + f'{sys_mac}')
-            #TODO IS-IS System ID generator!!!
-            router_id_ipv4 = bitsToIpv4(macToBits(sys_mac))
+
+            sys_id = macToSYSID(sys_mac)
+            logging.info('[SYSTEM ID] :: ' + f'{sys_id}')
+            net_id = AREA_ID + '.' + sys_id + '.00'
+            state.net_id = net_id
+            logging.info('[NET ID] :: ' + f'{net_id}')
+
+            router_id_ipv4 = "10.0.0.1" #TODO REMOVE THIS LINE AND UNCOMMENT THE NEXT LINE !!!!
+            #router_id_ipv4 = bitsToIpv4(macToBits(sys_mac))
             sys0_conf = {
                         'subinterface' : [
                             {
@@ -263,6 +285,38 @@ def Run(hostname):
                 if str(conf['path']) == 'interface[name=system0]':
                     logging.info('[SYSTEM IP] :: ' + f'{router_id_ipv4}')
 
+            routing_policy = { 'default-action' : {'policy-result' : 'accept'} }
+            update = [ ('/routing-policy/policy[name=all]', routing_policy)]
+            result = gc.set(update=update, encoding="json_ietf")
+            logging.info('[gNMIc] :: ' + f'{result}')
+            if state.underlay_protocol == 'IS-IS':
+                # Configure IS-IS NET ID and system0.0
+                instance_isis = {
+                                    'instance' : [
+                                        {'name' : f'{ISIS_INSTANCE}',
+                                         'admin-state' : 'enable',
+                                         'level-capability' : f'{ISIS_LEVEL_CAPABILITY}',
+                                         'net' :  [ {'net' : f'{state.net_id}'} ],
+                                         'interface' : [
+                                             {'interface-name' : 'system0.0',
+                                              'admin-state' : 'enable',
+                                              'circuit-type' : 'point-to-point',
+                                              'passive' : 'true'
+                                             }
+                                         ]
+                                        }
+                                    ]
+                                }
+                update = [ ('/network-instance[name=default]/protocols/isis', instance_isis) ]
+                result = gc.set(update=update, encoding="json_ietf")
+                logging.info('[gNMIc] :: ' + f'{result}')
+                for conf in result['response']:
+                    if str(conf['path']) == '/network-instance[name=default]/protocols/isis':
+                        logging.info('[UNDERLAY] :: IS-IS with NET ID' + f'{state.net_id}')
+
+            elif state.underlay_protocol == 'OSPFv3':
+                pass #TODO
+
             ## - New notifications incoming
             count = 0
             for r in notification_stream_response:
@@ -272,7 +326,7 @@ def Run(hostname):
                     if obj.HasField('config') and obj.config.key.js_path == ".commit.end":
                         logging.info('[TO DO] :: -commit.end config')
                     else:
-                        handleNotification(obj, state) # may add field 'state'
+                        handleNotification(obj, state)
 
     except grpc._channel._Rendezvous as err:
         logging.info(f"[EXITING NOW] :: {str(err)}")

@@ -28,9 +28,9 @@
       "image": "ghcr.io/nokia/srlinux",
       "mgmt-net": "",
       "mgmt-intf": "",
-      "mgmt-ipv4-address": "172.20.20.5",
+      "mgmt-ipv4-address": "172.20.20.7",
       "mgmt-ipv4-prefix-length": 24,
-      "mgmt-ipv6-address": "2001:172:20:20::5",
+      "mgmt-ipv6-address": "2001:172:20:20::7",
       "mgmt-ipv6-prefix-length": 64,
       "mac-address": "",
       "labels": {
@@ -57,9 +57,9 @@
       "image": "ghcr.io/nokia/srlinux",
       "mgmt-net": "",
       "mgmt-intf": "",
-      "mgmt-ipv4-address": "172.20.20.3",
+      "mgmt-ipv4-address": "172.20.20.11",
       "mgmt-ipv4-prefix-length": 24,
-      "mgmt-ipv6-address": "2001:172:20:20::3",
+      "mgmt-ipv6-address": "2001:172:20:20::b",
       "mgmt-ipv6-prefix-length": 64,
       "mac-address": "",
       "labels": {
@@ -86,9 +86,9 @@
       "image": "ghcr.io/nokia/srlinux",
       "mgmt-net": "",
       "mgmt-intf": "",
-      "mgmt-ipv4-address": "172.20.20.8",
+      "mgmt-ipv4-address": "172.20.20.6",
       "mgmt-ipv4-prefix-length": 24,
-      "mgmt-ipv6-address": "2001:172:20:20::8",
+      "mgmt-ipv6-address": "2001:172:20:20::6",
       "mgmt-ipv6-prefix-length": 64,
       "mac-address": "",
       "labels": {
@@ -115,9 +115,9 @@
       "image": "ghcr.io/hellt/network-multitool",
       "mgmt-net": "",
       "mgmt-intf": "",
-      "mgmt-ipv4-address": "172.20.20.11",
+      "mgmt-ipv4-address": "172.20.20.8",
       "mgmt-ipv4-prefix-length": 24,
-      "mgmt-ipv6-address": "2001:172:20:20::b",
+      "mgmt-ipv6-address": "2001:172:20:20::8",
       "mgmt-ipv6-prefix-length": 64,
       "mac-address": "",
       "labels": {
@@ -156,9 +156,9 @@
       "image": "ghcr.io/hellt/network-multitool",
       "mgmt-net": "",
       "mgmt-intf": "",
-      "mgmt-ipv4-address": "172.20.20.2",
+      "mgmt-ipv4-address": "172.20.20.10",
       "mgmt-ipv4-prefix-length": 24,
-      "mgmt-ipv6-address": "2001:172:20:20::2",
+      "mgmt-ipv6-address": "2001:172:20:20::a",
       "mgmt-ipv6-prefix-length": 64,
       "mac-address": "",
       "labels": {
@@ -175,13 +175,13 @@
         {
           "host-ip": "",
           "host-port": 0,
-          "port": 443,
+          "port": 80,
           "protocol": "tcp"
         },
         {
           "host-ip": "",
           "host-port": 0,
-          "port": 80,
+          "port": 443,
           "protocol": "tcp"
         }
       ]
@@ -238,9 +238,9 @@
       "image": "ghcr.io/hellt/network-multitool",
       "mgmt-net": "",
       "mgmt-intf": "",
-      "mgmt-ipv4-address": "172.20.20.10",
+      "mgmt-ipv4-address": "172.20.20.5",
       "mgmt-ipv4-prefix-length": 24,
-      "mgmt-ipv6-address": "2001:172:20:20::a",
+      "mgmt-ipv6-address": "2001:172:20:20::5",
       "mgmt-ipv6-prefix-length": 64,
       "mac-address": "",
       "labels": {
@@ -279,9 +279,9 @@
       "image": "ghcr.io/hellt/network-multitool",
       "mgmt-net": "",
       "mgmt-intf": "",
-      "mgmt-ipv4-address": "172.20.20.7",
+      "mgmt-ipv4-address": "172.20.20.3",
       "mgmt-ipv4-prefix-length": 24,
-      "mgmt-ipv6-address": "2001:172:20:20::7",
+      "mgmt-ipv6-address": "2001:172:20:20::3",
       "mgmt-ipv6-prefix-length": 64,
       "mac-address": "",
       "labels": {
@@ -320,9 +320,9 @@
       "image": "ghcr.io/nokia/srlinux",
       "mgmt-net": "",
       "mgmt-intf": "",
-      "mgmt-ipv4-address": "172.20.20.6",
+      "mgmt-ipv4-address": "172.20.20.4",
       "mgmt-ipv4-prefix-length": 24,
-      "mgmt-ipv6-address": "2001:172:20:20::6",
+      "mgmt-ipv6-address": "2001:172:20:20::4",
       "mgmt-ipv6-prefix-length": 64,
       "mac-address": "",
       "labels": {
@@ -349,9 +349,9 @@
       "image": "ghcr.io/nokia/srlinux",
       "mgmt-net": "",
       "mgmt-intf": "",
-      "mgmt-ipv4-address": "172.20.20.4",
+      "mgmt-ipv4-address": "172.20.20.2",
       "mgmt-ipv4-prefix-length": 24,
-      "mgmt-ipv6-address": "2001:172:20:20::4",
+      "mgmt-ipv6-address": "2001:172:20:20::2",
       "mgmt-ipv6-prefix-length": 64,
       "mac-address": "",
       "labels": {
@@ -373,13 +373,13 @@
       "a": {
         "node": "leaf1",
         "interface": "e1-49",
-        "mac": "aa:c1:ab:d0:93:6a",
+        "mac": "aa:c1:ab:2e:63:ed",
         "peer": "z"
       },
       "z": {
         "node": "spine1",
         "interface": "e1-1",
-        "mac": "aa:c1:ab:6e:8a:bb",
+        "mac": "aa:c1:ab:c9:e0:c3",
         "peer": "a"
       }
     },
@@ -387,13 +387,13 @@
       "a": {
         "node": "leaf1",
         "interface": "e1-50",
-        "mac": "aa:c1:ab:f9:dd:cd",
+        "mac": "aa:c1:ab:d3:86:bd",
         "peer": "z"
       },
       "z": {
         "node": "spine2",
         "interface": "e1-1",
-        "mac": "aa:c1:ab:c1:13:31",
+        "mac": "aa:c1:ab:54:a0:8e",
         "peer": "a"
       }
     },
@@ -401,13 +401,13 @@
       "a": {
         "node": "leaf2",
         "interface": "e1-49",
-        "mac": "aa:c1:ab:02:b2:94",
+        "mac": "aa:c1:ab:d6:f8:c6",
         "peer": "z"
       },
       "z": {
         "node": "spine1",
         "interface": "e1-2",
-        "mac": "aa:c1:ab:4a:18:72",
+        "mac": "aa:c1:ab:b7:b5:cf",
         "peer": "a"
       }
     },
@@ -415,13 +415,13 @@
       "a": {
         "node": "leaf2",
         "interface": "e1-50",
-        "mac": "aa:c1:ab:b2:a4:ae",
+        "mac": "aa:c1:ab:29:79:63",
         "peer": "z"
       },
       "z": {
         "node": "spine2",
         "interface": "e1-2",
-        "mac": "aa:c1:ab:ed:55:b2",
+        "mac": "aa:c1:ab:42:52:46",
         "peer": "a"
       }
     },
@@ -429,13 +429,13 @@
       "a": {
         "node": "leaf3",
         "interface": "e1-49",
-        "mac": "aa:c1:ab:d9:5a:18",
+        "mac": "aa:c1:ab:5f:ac:28",
         "peer": "z"
       },
       "z": {
         "node": "spine1",
         "interface": "e1-3",
-        "mac": "aa:c1:ab:c5:1c:9b",
+        "mac": "aa:c1:ab:91:4d:ec",
         "peer": "a"
       }
     },
@@ -443,13 +443,13 @@
       "a": {
         "node": "leaf3",
         "interface": "e1-50",
-        "mac": "aa:c1:ab:9d:62:14",
+        "mac": "aa:c1:ab:c8:f5:3f",
         "peer": "z"
       },
       "z": {
         "node": "spine2",
         "interface": "e1-3",
-        "mac": "aa:c1:ab:88:b1:db",
+        "mac": "aa:c1:ab:b9:fa:55",
         "peer": "a"
       }
     },
@@ -457,13 +457,13 @@
       "a": {
         "node": "server11",
         "interface": "eth1",
-        "mac": "aa:c1:ab:31:7e:93",
+        "mac": "aa:c1:ab:a3:2c:f3",
         "peer": "z"
       },
       "z": {
         "node": "leaf1",
         "interface": "e1-1",
-        "mac": "aa:c1:ab:33:d4:e4",
+        "mac": "aa:c1:ab:ca:5f:2a",
         "peer": "a"
       }
     },
@@ -471,13 +471,13 @@
       "a": {
         "node": "server21",
         "interface": "eth1",
-        "mac": "aa:c1:ab:0b:25:e3",
+        "mac": "aa:c1:ab:e9:93:16",
         "peer": "z"
       },
       "z": {
         "node": "leaf1",
         "interface": "e1-2",
-        "mac": "aa:c1:ab:09:40:49",
+        "mac": "aa:c1:ab:18:90:bd",
         "peer": "a"
       }
     },
@@ -485,13 +485,13 @@
       "a": {
         "node": "server22",
         "interface": "eth1",
-        "mac": "aa:c1:ab:3b:91:af",
+        "mac": "aa:c1:ab:ed:f8:f1",
         "peer": "z"
       },
       "z": {
         "node": "leaf2",
         "interface": "e1-1",
-        "mac": "aa:c1:ab:2c:f0:41",
+        "mac": "aa:c1:ab:75:f6:13",
         "peer": "a"
       }
     },
@@ -499,13 +499,13 @@
       "a": {
         "node": "server13",
         "interface": "eth1",
-        "mac": "aa:c1:ab:f6:55:d5",
+        "mac": "aa:c1:ab:d5:1c:b5",
         "peer": "z"
       },
       "z": {
         "node": "leaf3",
         "interface": "e1-1",
-        "mac": "aa:c1:ab:e9:9d:37",
+        "mac": "aa:c1:ab:5d:ef:6e",
         "peer": "a"
       }
     },
@@ -513,13 +513,13 @@
       "a": {
         "node": "server23",
         "interface": "eth1",
-        "mac": "aa:c1:ab:3a:91:e0",
+        "mac": "aa:c1:ab:ad:92:d4",
         "peer": "z"
       },
       "z": {
         "node": "leaf3",
         "interface": "e1-2",
-        "mac": "aa:c1:ab:c5:f1:fd",
+        "mac": "aa:c1:ab:8e:6a:dd",
         "peer": "a"
       }
     }
