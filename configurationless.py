@@ -19,8 +19,9 @@ import datetime
 import signal
 import socket
 import json
-import logging
 import threading
+import random
+import logging
 from logging.handlers import RotatingFileHandler
 from pygnmi.client import gNMIclient
 from ndk import appid_service_pb2
@@ -137,12 +138,17 @@ def macToBits(mac_address:str):
 
 
 def bitsToIpv4(binary):
-    ## - Remove the leftmost 16 bits to have only 32
-    bit32_binary = binary[16:]
+    ## - Remove the leftmost 24 bits to have only 24
+    bit32_binary = binary[24:]
+    bit32_binary = "00000000"+bit32_binary
     ## - Split the binary string into four equal parts
     octets = [bit32_binary[i:i+8] for i in range(0, len(bit32_binary), 8)]
     ## - Convert each octet from binary to decimal
     decimal_octets = [binaryToDecimal(octet) for octet in octets]
+    ## - Ensuring first byte is between 1 and 223
+    del decimal_octets[0]
+    first_byte = random.randint(1, 223)
+    decimal_octets.insert(0, first_byte)
     ipv4_address = '.'.join(map(str, decimal_octets))
     return ipv4_address
 
@@ -237,7 +243,7 @@ def Run(hostname):
         ## - gNMI Server connection variables: default port for gNMI server is 57400
         gnmic_host = (hostname, GNMI_PORT) #172.20.20.11, 'clab-dc1-leaf1'
         with gNMIclient(target=gnmic_host, path_cert=SR_CA, username=SR_USER, password=SR_PASSWORD, debug=True) as gc:
-            ## - Initial Router ID and routing-policy configurations
+            ## - Initial Router ID; IP, NET; int system0 and routing-policy configurations
             result = gc.get(path=["/platform/chassis/hw-mac-address"], encoding="json_ietf")
             #for e in [e for i in result['notification'] if 'update' in i.keys() for e in i['update'] if 'val' in e.keys()]:
             sys_mac = result['notification'][0]['update'][0]['val']
@@ -250,8 +256,7 @@ def Run(hostname):
             state.net_id = net_id
             logging.info('[NET ID] :: ' + f'{net_id}')
 
-            router_id_ipv4 = "10.0.0.1" #TODO REMOVE THIS LINE AND UNCOMMENT THE NEXT LINE !!!!
-            #router_id_ipv4 = bitsToIpv4(macToBits(sys_mac))
+            router_id_ipv4 = bitsToIpv4(macToBits(sys_mac))
             sys0_conf = {
                         'subinterface' : [
                             {
@@ -316,6 +321,9 @@ def Run(hostname):
 
             elif state.underlay_protocol == 'OSPFv3':
                 pass #TODO
+            
+            ## - Thread responsible for checking interfaces with transceivers and enable the routing protocol on those interfaces
+            #TODO
 
             ## - New notifications incoming
             count = 0
