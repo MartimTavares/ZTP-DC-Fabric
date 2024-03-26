@@ -23,6 +23,7 @@ import threading
 import random
 import logging
 from logging.handlers import RotatingFileHandler
+from copy import copy, deepcopy
 from pygnmi.client import gNMIclient
 from ndk import appid_service_pb2
 from ndk.sdk_service_pb2_grpc import SdkMgrServiceStub
@@ -115,6 +116,7 @@ def containString(longer_word, smaller_word):
 class State(object):
     def __init__(self):
         self.lldp_neighbors = []
+        self.new_lldp_notification = False
         self.underlay_protocol = ""
         self.net_id = ""
         self.sys_ip = ""
@@ -163,7 +165,28 @@ def macToSYSID(mac_address:str):
 
 #####################################################
 ####            THE AGENT'S MAIN LOGIC           ####
-def handle_LldpNeighborNotification(notification: Notification, state) -> None:
+"""
+def underlayThread(state, state_lock):
+    logging.info(f"[THREAD] :: Underlay thread started")
+    copy_of_state = deepcopy(state)
+    while True:
+        if state.new_lldp_notification == True:
+            ## - Handle new changes
+            #logging.info(f"[LAST STATE] :: {copy_of_state.lldp_neighbors}")
+            #logging.info(f"[NEW STATE] :: {state.lldp_neighbors}")
+            #[{'neighbor_chassis': '1A:7E:08:FF:00:00', 'sys_name': 'SRLinux', 'neighbor_int': 
+            #'ethernet-1/1', 'local_int': 'ethernet-1/49'}, {'neighbor_chassis': '1A:CE:09:FF:00:00',
+            #'sys_name': 'SRLinux', 'neighbor_int': 'ethernet-1/1', 'local_int': 'ethernet-1/50'}]
+            with state_lock:
+                for neighbor in state.lldp_neighbors:
+                    pass
+                state.new_lldp_notification = False
+                copy_of_state = deepcopy(state)
+        time.sleep(10)
+"""
+
+
+def handle_LldpNeighborNotification(notification: Notification, state, state_lock, gnmiclient) -> None:
     interface_name = str(notification.key.interface_name)
     system_name = str(notification.data.system_description) 
     if containString(system_name, NOS_TYPE):
@@ -174,27 +197,86 @@ def handle_LldpNeighborNotification(notification: Notification, state) -> None:
     port_id = str(notification.data.port_id)
     neighbor = {NEIGHBOR_CHASSIS:source_chassis, SYS_NAME:system_name, NEIGHBOR_INT:port_id, LOCAL_INT: interface_name}
     
-    # if TODO -> only accept if it reached a local interface with a transceiver !!!!!!
-
-    ## - Notification is CREATE (value: 0)
-    if notification.op == 0:
-        logging.info(f"[NEW NEIGHBOR] :: {source_chassis}, {system_name}, {port_id}, {interface_name}")
-        state.lldp_neighbors.append(neighbor)
-        # TODO logic -> update topology
-    ## - Notification is DELETE (value: 2)
-    elif notification.op == 2:
-        for i in state.lldp_neighbors[:]:
-            if i[LOCAL_INT] == neighbor[LOCAL_INT] and i[NEIGHBOR_CHASSIS] == neighbor[NEIGHBOR_CHASSIS]:
-                logging.info(f"[REMOVED NEIGHBOR] :: {i[NEIGHBOR_CHASSIS]}, {i[SYS_NAME]}, {i[NEIGHBOR_INT]}, {i[LOCAL_INT]}")
-                state.lldp_neighbors.remove(i)
-                # TODO logic -> update topology
-    ## - Notification is CHANGE (value: 1)
-    else:
-        pass
-        # TODO
+    int_conf = {
+                'subinterface' : [
+                    {
+                    'index' : '0',
+                    # /interface[name=ethernet-1/49]/subinterface[index=0]
+                    'ipv4' : {
+                        'unnumbered' : {
+                            'admin-state' : 'enable',
+                            'interface' : 'system0.0'
+                        },
+                        'admin-state' : 'enable'
+                    }, 
+                    'admin-state' : 'enable'
+                    #
+                    }
+                ],
+                'admin-state' : 'enable'
+                }
+    net_inst = {
+                'admin-state' : 'enable',
+                'interface' : [
+                    {'name' : f'{interface_name}.0'}
+                ]  
+                }
+    routing_conf = {}
+    if state.underlay_protocol == 'IS-IS':
+        # Configure IS-IS interfaces
+        instance_isis = {
+                            'instance' : [
+                                {'name' : f'{ISIS_INSTANCE}',
+                                 'interface' : [
+                                     {'interface-name' : f'{interface_name}.0',
+                                      'admin-state' : 'enable',
+                                      'circuit-type' : 'point-to-point'
+                                     }
+                                 ]
+                                }
+                            ]
+                        }
+        routing_conf = instance_isis
+    with state_lock:
+        ## - Notification is CREATE (value: 0)
+        if notification.op == 0:
+            create_updates = [
+                (f'/interface[name={interface_name}]', int_conf),
+                ('/network-instance[name=default]', net_inst),
+                ('/network-instance[name=default]/protocols/isis', routing_conf)
+            ]
+            result = gnmiclient.set(update=create_updates, encoding="json_ietf")
+            logging.info('[gNMIc] :: ' + f'{result}')
+            logging.info(f"[NEW NEIGHBOR] :: {source_chassis}, {system_name}, {port_id}, {interface_name}")
+            state.lldp_neighbors.append(neighbor)
+        ## - Notification is DELETE (value: 2)
+        elif notification.op == 2:
+            for i in state.lldp_neighbors[:]:
+                if i[LOCAL_INT] == neighbor[LOCAL_INT] and i[NEIGHBOR_CHASSIS] == neighbor[NEIGHBOR_CHASSIS]:
+                    int_conf['admin-state'] = "disable"
+                    int_conf['subinterface'][0]['admin-state'] = "disable"
+                    int_conf['subinterface'][0]['ipv4']['admin-state'] = "disable"
+                    int_conf['subinterface'][0]['ipv4']['unnumbered']['admin-state'] = "disable"
+                    if state.underlay_protocol == 'IS-IS':
+                        routing_conf['instance'][0]['interface'][0]['admin-state'] = "disable"
+                    delete_updates = [
+                        (f'/interface[name={interface_name}]', int_conf),
+                        ('/network-instance[name=default]/protocols/isis', routing_conf)
+                    ]
+                    result = gnmiclient.set(update=delete_updates, encoding="json_ietf")
+                    logging.info('[gNMIc] :: ' + f'{result}')
+                    for conf in result['response']:
+                        if str(conf['path']) == f'interface[name={interface_name}]':
+                            logging.info(f"[REMOVED NEIGHBOR] :: {i[NEIGHBOR_CHASSIS]}, {i[SYS_NAME]}, {i[NEIGHBOR_INT]}, {i[LOCAL_INT]}")
+                            state.lldp_neighbors.remove(i)
+        ## - Notification is CHANGE (value: 1)
+        else:
+            pass
+            # TODO
+        state.new_lldp_notification = True
     
 
-def handleNotification(notification: Notification, state)-> None:
+def handleNotification(notification: Notification, state, state_lock, gnmiclient)-> None:
     #if notification.HasField("config"):
     #    logging.info("Implement config notification handling if needed")
     #if notification.HasField("intf"):
@@ -202,7 +284,7 @@ def handleNotification(notification: Notification, state)-> None:
     #if notification.HasField("nw_inst"):
     #    handle_NetworkInstanceNotification(notification.nw_inst)
     if notification.HasField('lldp_neighbor'):
-        handle_LldpNeighborNotification(notification.lldp_neighbor, state)
+        handle_LldpNeighborNotification(notification.lldp_neighbor, state, state_lock, gnmiclient)
     #if notification.HasField("route"):
     #    logging.info("Implement route notification handling if needed")
     return False
@@ -239,6 +321,8 @@ def Run(hostname):
         ## - Agent's main logic: upon receiving notifications evolve the system according with the new topology.
         state = State()
         state.underlay_protocol = UNDERLAY_PROTOCOL
+        ## - Thread locker so that different threads and the main process don't see outdated data
+        state_lock = threading.Lock()
 
         ## - gNMI Server connection variables: default port for gNMI server is 57400
         gnmic_host = (hostname, GNMI_PORT) #172.20.20.11, 'clab-dc1-leaf1'
@@ -324,6 +408,8 @@ def Run(hostname):
             
             ## - Thread responsible for checking interfaces with transceivers and enable the routing protocol on those interfaces
             #TODO
+            #underlay_thread = threading.Thread(target=underlayThread, args=(state, state_lock,))
+            #underlay_thread.start()
 
             ## - New notifications incoming
             count = 0
@@ -334,7 +420,7 @@ def Run(hostname):
                     if obj.HasField('config') and obj.config.key.js_path == ".commit.end":
                         logging.info('[TO DO] :: -commit.end config')
                     else:
-                        handleNotification(obj, state)
+                        handleNotification(obj, state, state_lock, gc)
 
     except grpc._channel._Rendezvous as err:
         logging.info(f"[EXITING NOW] :: {str(err)}")

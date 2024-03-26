@@ -23,7 +23,7 @@
 # State from LLDP neighbors
 # / info from state system lldp interface *
 # info from state interface * transceiver oper-state
-# info from state interface * transceiver tx-laser
+# info from state interface * transceiver tx-lase
 
 # Check configuration as json
 # / network-instance default protocols isis instance i1
