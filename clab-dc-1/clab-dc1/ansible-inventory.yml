@@ -8,24 +8,24 @@ all:
     linux:
       hosts:
         clab-dc1-server11:
-          ansible_host: 172.20.20.5
+          ansible_host: 172.20.20.4
         clab-dc1-server13:
-          ansible_host: 172.20.20.9
+          ansible_host: 172.20.20.10
         clab-dc1-server21:
-          ansible_host: 172.20.20.6
-        clab-dc1-server22:
-          ansible_host: 172.20.20.2
-        clab-dc1-server23:
           ansible_host: 172.20.20.3
+        clab-dc1-server22:
+          ansible_host: 172.20.20.5
+        clab-dc1-server23:
+          ansible_host: 172.20.20.9
     srl:
       hosts:
         clab-dc1-leaf1:
-          ansible_host: 172.20.20.8
-        clab-dc1-leaf2:
-          ansible_host: 172.20.20.4
-        clab-dc1-leaf3:
           ansible_host: 172.20.20.11
-        clab-dc1-spine1:
-          ansible_host: 172.20.20.10
-        clab-dc1-spine2:
+        clab-dc1-leaf2:
+          ansible_host: 172.20.20.6
+        clab-dc1-leaf3:
           ansible_host: 172.20.20.7
+        clab-dc1-spine1:
+          ansible_host: 172.20.20.8
+        clab-dc1-spine2:
+          ansible_host: 172.20.20.2

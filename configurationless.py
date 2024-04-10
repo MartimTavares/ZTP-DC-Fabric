@@ -117,6 +117,7 @@ class State(object):
     def __init__(self):
         self.lldp_neighbors = []
         self.new_lldp_notification = False
+        self.isis_nodes = [] #[ {ip_addr : 1.1.1.1, neighbors : [ {ip_addr:2.2.2.2}, ...] } ]
         self.underlay_protocol = ""
         self.net_id = ""
         self.sys_ip = ""
@@ -163,6 +164,18 @@ def macToSYSID(mac_address:str):
     return sys_id
 
 
+def fillNodesNeighbors(state):
+    ## - Searches over each node's neighbor NET ID and compares with each node's NET ID to retrieve that IP
+    for node in state.isis_nodes:
+        if len(node['neighbors_ip']) != len(node['neighbors_net_id']):
+            node['neighbors_ip'] = []
+            for net in node['neighbors_net_id']:
+                for other_node in state.isis_nodes:
+                    if str(net) == str(other_node['net_id']):
+                        node['neighbors_ip'].append(other_node['ip_addr'])
+                        break
+
+
 #####################################################
 ####            THE AGENT'S MAIN LOGIC           ####
 """
@@ -184,6 +197,114 @@ def underlayThread(state, state_lock):
                 copy_of_state = deepcopy(state)
         time.sleep(10)
 """
+
+def handle_RouteNotification(notification: Notification, state, state_lock, gnmiclient) -> None:
+    node_ip_add = ".".join(str(byte) for byte in notification.key.ip_prefix.ip_addr.addr)
+    node_ip_add.split('.')
+    notif_ip_addr = str(node_ip_add)
+    ## - Check if it is a valid IP address for a node loopback
+    if node_ip_add != '0.0.0.0' and 1 <= int(node_ip_add.split('.')[0]) <= 223 and len(node_ip_add.split('.')) == 4:
+        #logging.info(f"[ROUTE NOTIFICATION] :: {str(notification)}")
+        if state.underlay_protocol == 'IS-IS':
+            ## - Notification is CREATE (value: 0) or UPDATE (value: 1)
+            if notification.op == 0 or notification.op == 1:
+                ## - Check if IP address is in routing table
+                result = gnmiclient.get(path=[f"/network-instance[name=default]/route-table/ipv4-unicast/route[ipv4-prefix=*][route-type=isis][route-owner=isis_mgr][id=0][origin-network-instance=default]/ipv4-prefix"], encoding="json_ietf")
+                if 'update' in result['notification'][0]:
+                    if result['notification'][0]['update'][0]['val']['route']:
+                        for dest in result['notification'][0]['update'][0]['val']['route']:
+                            ## - Check if it is a /32 loopback address and if IP is in IS-IS routing tables 
+                            if str(dest['ipv4-prefix']) == notif_ip_addr + '/32' and str(dest['route-owner']) == 'isis_mgr':
+                                ## - Find and store data about the neighbors of the new IS-IS node with TLVs
+                                tlvs = gnmiclient.get(path=[f"network-instance[name=default]/protocols/isis/instance[name={ISIS_INSTANCE}]/level-database[level-number=1][lsp-id=*]/defined-tlvs"], encoding="json_ietf")                             
+                                ## - Add information about a new isis node and its neighbors
+                                if notification.op == 0:
+                                    new_isis_node = { 'ip_addr' : notif_ip_addr, 'neighbors_ip' : [], 'neighbors_net_id' : [] }
+                                    if 'update' in tlvs['notification'][0]:
+                                        if tlvs['notification'][0]['update'][0]['val']['level-database']:
+                                            for tlv in tlvs['notification'][0]['update'][0]['val']['level-database']:
+                                                node_net_id = str(tlv['lsp-id'])[:-3]
+                                                node_ip = str(tlv['defined-tlvs']['ipv4-interface-addresses'][0])
+                                                
+                                                if node_ip == notif_ip_addr:
+                                                    ## - Creates a new entry for new node joining 
+                                                    new_isis_node['net_id'] = AREA_ID +'.'+node_net_id
+                                                    if 'extended-is-reachability' in tlv['defined-tlvs']:
+                                                        for neighbor in tlv['defined-tlvs']['extended-is-reachability']:
+                                                            ## - Directly connected nodes are at a distance metric of 10
+                                                            if neighbor['default-metric'] == 10:
+                                                                neighbor_net = AREA_ID+'.'+str(neighbor['neighbor'])
+                                                                new_isis_node['neighbors_net_id'].append(neighbor_net)
+                                                
+                                                else:
+                                                    if node_ip == state.sys_ip:
+                                                        ## - Include the neighbors of this node (me) : updates every time a notif arrives
+                                                        i_am_in_list = False
+                                                        me_net = AREA_ID +'.'+node_net_id
+                                                        me_isis_node = { 'ip_addr' : node_ip, 'net_id' : me_net, 'neighbors_ip' : [], 'neighbors_net_id' : [] }
+                                                        for e in state.isis_nodes:
+                                                            if e['ip_addr'] == node_ip:
+                                                                i_am_in_list = True
+                                                                break
+                                                        if not i_am_in_list:
+                                                            state.isis_nodes.append(me_isis_node)
+                                                    ## - Besides updating me, it also updates previously joined nodes
+                                                    ## - Avoiding missing information regarding a node that joins later and connects with a previously known node that is not updated with this new neighbor's NET ID        
+                                                    for e in state.isis_nodes:
+                                                        if e['ip_addr'] == node_ip:
+                                                            if 'extended-is-reachability' in tlv['defined-tlvs']:
+                                                                for neighbor in tlv['defined-tlvs']['extended-is-reachability']:
+                                                                    ## - Directly connected nodes are at a distance metric of 10
+                                                                    if neighbor['default-metric'] == 10:
+                                                                        neighbor_net = AREA_ID+'.'+str(neighbor['neighbor'])
+                                                                        if neighbor_net not in e['neighbors_net_id']:
+                                                                            e['neighbors_net_id'].append(neighbor_net)
+
+                                    state.isis_nodes.append(new_isis_node)
+                                    fillNodesNeighbors(state)
+                                    logging.info(f"[IS-IS] :: Node {notif_ip_addr} joined the network topology")
+                                    
+                                elif notification.op == 1:
+                                    ## - A route has changed (e.g. one of the other node's interface has shutdown)
+                                    logging.info(f"!! 1 !! {str(notification.data)}")
+                                    """
+                                    if 'update' in tlvs['notification'][0]:
+                                            if tlvs['notification'][0]['update'][0]['val']['level-database']:
+                                                for tlv in tlvs['notification'][0]['update'][0]['val']['level-database']:
+                                                    node_net_id = str(tlv['lsp-id'])[:-3]
+                                                    node_ip = str(tlv['defined-tlvs']['ipv4-interface-addresses'][0])
+                                                    logging.info(f"[ISIS NODE] :: {node_net_id} is {node_ip}")
+                                                    if 'extended-is-reachability' in tlv['defined-tlvs']:
+                                                        for neighbor in tlv['defined-tlvs']['extended-is-reachability']:
+                                                            ## - Directly connected nodes are at a distance metric of 10
+                                                            if neighbor['default-metric'] == 10:
+                                                                logging.info(f"[ISIS NEIGHBOR] :: {neighbor['neighbor']}")
+                                    """
+                                ## - Check if IP address also in local state
+                                #TODO
+                                #state.isis_nodes = [ {ip_addr : 1.1.1.1, net_id : 49.0001.1A0D.00FF.0000.00, neighbors_ip : [ {ip_addr:2.2.2.2}, ...], neighbors_net_id } ]
+
+            ## - Notification is DELETE (value: 2)
+            elif notification.op == 2:
+                index = ""
+                net = ""
+                for node in range(len(state.isis_nodes)):
+                    if state.isis_nodes[node]['ip_addr'] == notif_ip_addr:
+                        index = node
+                        net = state.isis_nodes[node]['net_id']
+                if index != "":
+                    state.isis_nodes.pop(index)
+                    logging.info(f"[IS-IS] :: Node {notif_ip_addr} left the network topology")
+                    ## - Need to remove this node's IP and NET from other nodes' neighboring information
+                    for n in state.isis_nodes:
+                        for n_net in n['neighbors_net_id']:
+                            if n_net == net:
+                                n['neighbors_net_id'].remove(n_net)
+                        for n_ip in n['neighbors_ip']:
+                            if n_ip == notif_ip_addr:
+                                n['neighbors_ip'].remove(n_ip)
+        
+        logging.info(f"[IS-IS] :: Updated information regarding each node in the IS-IS topology:\n{json.dumps(state.isis_nodes, indent=4)}")
 
 
 def handle_LldpNeighborNotification(notification: Notification, state, state_lock, gnmiclient) -> None:
@@ -237,14 +358,17 @@ def handle_LldpNeighborNotification(notification: Notification, state, state_loc
                             ]
                         }
         routing_conf = instance_isis
+    create_updates = []
+    delete_updates = []
     with state_lock:
         ## - Notification is CREATE (value: 0)
         if notification.op == 0:
-            create_updates = [
-                (f'/interface[name={interface_name}]', int_conf),
-                ('/network-instance[name=default]', net_inst),
-                ('/network-instance[name=default]/protocols/isis', routing_conf)
-            ]
+            if state.underlay_protocol == 'IS-IS':
+                create_updates = [
+                    (f'/interface[name={interface_name}]', int_conf),
+                    ('/network-instance[name=default]', net_inst),
+                    ('/network-instance[name=default]/protocols/isis', routing_conf)
+                ]
             result = gnmiclient.set(update=create_updates, encoding="json_ietf")
             logging.info('[gNMIc] :: ' + f'{result}')
             logging.info(f"[NEW NEIGHBOR] :: {source_chassis}, {system_name}, {port_id}, {interface_name}")
@@ -277,16 +401,10 @@ def handle_LldpNeighborNotification(notification: Notification, state, state_loc
     
 
 def handleNotification(notification: Notification, state, state_lock, gnmiclient)-> None:
-    #if notification.HasField("config"):
-    #    logging.info("Implement config notification handling if needed")
-    #if notification.HasField("intf"):
-    #    handle_InterfaceNotification(notification.intf)
-    #if notification.HasField("nw_inst"):
-    #    handle_NetworkInstanceNotification(notification.nw_inst)
     if notification.HasField('lldp_neighbor'):
         handle_LldpNeighborNotification(notification.lldp_neighbor, state, state_lock, gnmiclient)
-    #if notification.HasField("route"):
-    #    logging.info("Implement route notification handling if needed")
+    if notification.HasField("route"):
+        handle_RouteNotification(notification.route, state, state_lock, gnmiclient)
     return False
 
 
@@ -339,47 +457,56 @@ def Run(hostname):
             net_id = AREA_ID + '.' + sys_id + '.00'
             state.net_id = net_id
             logging.info('[NET ID] :: ' + f'{net_id}')
-
-            router_id_ipv4 = bitsToIpv4(macToBits(sys_mac))
-            sys0_conf = {
-                        'subinterface' : [
-                            {
-                            'index' : '0',
-                            # /interface[name=system]/subinterface[index=0]
-                            'ipv4' : {
-                                'address' : [
-                                    {'ip-prefix' : f'{router_id_ipv4}/32'}
-                                ],
+            
+            ## - Checking if has any Loopback configuration
+            check_ip_exist = gc.get(path=["/interface[name=system0]/subinterface[index=0]/ipv4"], encoding="json_ietf")
+            if 'update' in check_ip_exist['notification'][0]:
+                if 'address' in check_ip_exist['notification'][0]['update'][0]['val']:
+                    if 'ip-prefix' in check_ip_exist['notification'][0]['update'][0]['val']['address'][0]:
+                        state.sys_ip = check_ip_exist['notification'][0]['update'][0]['val']['address'][0]['ip-prefix'][:-3]
+            ## - Create a Loopback address in case it doesn't exist already
+            else:
+                router_id_ipv4 = bitsToIpv4(macToBits(sys_mac))
+                sys0_conf = {
+                            'subinterface' : [
+                                {
+                                'index' : '0',
+                                # /interface[name=system]/subinterface[index=0]
+                                'ipv4' : {
+                                    'address' : [
+                                        {'ip-prefix' : f'{router_id_ipv4}/32'}
+                                    ],
+                                    'admin-state' : 'enable'
+                                }, 
                                 'admin-state' : 'enable'
-                            }, 
+                                #
+                                }
+                            ],
                             'admin-state' : 'enable'
-                            #
-                            }
-                        ],
-                        'admin-state' : 'enable'
-                        } 
-            net_inst = {
-                       'admin-state' : 'enable',
-                       'interface' : [
-                           {'name' : 'system0.0'}
-                       ]  
-                       }
-            updates = [
-                ('/network-instance[name=default]', net_inst),
-                ('/interface[name=system0]', sys0_conf)
-            ] 
-            result = gc.set(update=updates, encoding="json_ietf")
-            logging.info('[gNMIc] :: ' + f'{result}')
-            for conf in result['response']:
-                if str(conf['path']) == 'interface[name=system0]':
-                    logging.info('[SYSTEM IP] :: ' + f'{router_id_ipv4}')
+                            } 
+                net_inst = {
+                        'admin-state' : 'enable',
+                        'interface' : [
+                            {'name' : 'system0.0'}
+                        ]  
+                        }
+                updates = [
+                    ('/network-instance[name=default]', net_inst),
+                    ('/interface[name=system0]', sys0_conf)
+                ] 
+                result = gc.set(update=updates, encoding="json_ietf")
+                logging.info('[gNMIc] :: ' + f'{result}')
+                for conf in result['response']:
+                    if str(conf['path']) == 'interface[name=system0]':
+                        logging.info('[SYSTEM IP] :: ' + f'{router_id_ipv4}')
+                state.sys_ip = router_id_ipv4
 
             routing_policy = { 'default-action' : {'policy-result' : 'accept'} }
             update = [ ('/routing-policy/policy[name=all]', routing_policy)]
             result = gc.set(update=update, encoding="json_ietf")
             logging.info('[gNMIc] :: ' + f'{result}')
             if state.underlay_protocol == 'IS-IS':
-                # Configure IS-IS NET ID and system0.0
+                ## - Configure IS-IS NET ID and system0.0
                 instance_isis = {
                                     'instance' : [
                                         {'name' : f'{ISIS_INSTANCE}',
@@ -415,7 +542,6 @@ def Run(hostname):
             count = 0
             for r in notification_stream_response:
                 count += 1
-                #logging.info(f"[RECEIVED NOTIFICATION] :: Number {count} \n{r.notification}")
                 for obj in r.notification:
                     if obj.HasField('config') and obj.config.key.js_path == ".commit.end":
                         logging.info('[TO DO] :: -commit.end config')
