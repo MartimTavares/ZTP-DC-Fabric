@@ -117,7 +117,7 @@ class State(object):
     def __init__(self):
         self.lldp_neighbors = []
         self.new_lldp_notification = False
-        self.isis_nodes = [] #[ {ip_addr : 1.1.1.1, neighbors : [ {ip_addr:2.2.2.2}, ...] } ]
+        self.isis_nodes = [] #[ {ip_addr : 1.1.1.1, net_id : 49.0001.1A0D.00FF.0000.00, neighbors_ip : [ {ip_addr:2.2.2.2}, ...], neighbors_net_id } ]
         self.underlay_protocol = ""
         self.net_id = ""
         self.sys_ip = ""
@@ -206,6 +206,7 @@ def handle_RouteNotification(notification: Notification, state, state_lock, gnmi
     if node_ip_add != '0.0.0.0' and 1 <= int(node_ip_add.split('.')[0]) <= 223 and len(node_ip_add.split('.')) == 4:
         #logging.info(f"[ROUTE NOTIFICATION] :: {str(notification)}")
         if state.underlay_protocol == 'IS-IS':
+
             ## - Notification is CREATE (value: 0) or UPDATE (value: 1)
             if notification.op == 0 or notification.op == 1:
                 ## - Check if IP address is in routing table
@@ -218,72 +219,65 @@ def handle_RouteNotification(notification: Notification, state, state_lock, gnmi
                                 ## - Find and store data about the neighbors of the new IS-IS node with TLVs
                                 tlvs = gnmiclient.get(path=[f"network-instance[name=default]/protocols/isis/instance[name={ISIS_INSTANCE}]/level-database[level-number=1][lsp-id=*]/defined-tlvs"], encoding="json_ietf")                             
                                 ## - Add information about a new isis node and its neighbors
-                                if notification.op == 0:
-                                    new_isis_node = { 'ip_addr' : notif_ip_addr, 'neighbors_ip' : [], 'neighbors_net_id' : [] }
-                                    if 'update' in tlvs['notification'][0]:
-                                        if tlvs['notification'][0]['update'][0]['val']['level-database']:
-                                            for tlv in tlvs['notification'][0]['update'][0]['val']['level-database']:
-                                                node_net_id = str(tlv['lsp-id'])[:-3]
-                                                node_ip = str(tlv['defined-tlvs']['ipv4-interface-addresses'][0])
-                                                
-                                                if node_ip == notif_ip_addr:
-                                                    ## - Creates a new entry for new node joining 
-                                                    new_isis_node['net_id'] = AREA_ID +'.'+node_net_id
-                                                    if 'extended-is-reachability' in tlv['defined-tlvs']:
-                                                        for neighbor in tlv['defined-tlvs']['extended-is-reachability']:
-                                                            ## - Directly connected nodes are at a distance metric of 10
-                                                            if neighbor['default-metric'] == 10:
-                                                                neighbor_net = AREA_ID+'.'+str(neighbor['neighbor'])
-                                                                new_isis_node['neighbors_net_id'].append(neighbor_net)
-                                                
-                                                else:
-                                                    if node_ip == state.sys_ip:
-                                                        ## - Include the neighbors of this node (me) : updates every time a notif arrives
-                                                        i_am_in_list = False
-                                                        me_net = AREA_ID +'.'+node_net_id
-                                                        me_isis_node = { 'ip_addr' : node_ip, 'net_id' : me_net, 'neighbors_ip' : [], 'neighbors_net_id' : [] }
-                                                        for e in state.isis_nodes:
-                                                            if e['ip_addr'] == node_ip:
-                                                                i_am_in_list = True
-                                                                break
-                                                        if not i_am_in_list:
-                                                            state.isis_nodes.append(me_isis_node)
-                                                    ## - Besides updating me, it also updates previously joined nodes
-                                                    ## - Avoiding missing information regarding a node that joins later and connects with a previously known node that is not updated with this new neighbor's NET ID        
+                                
+                                new_isis_node = { 'ip_addr' : notif_ip_addr, 'neighbors_ip' : [], 'neighbors_net_id' : [] }
+                                if 'update' in tlvs['notification'][0]:
+                                    if tlvs['notification'][0]['update'][0]['val']['level-database']:
+                                        for tlv in tlvs['notification'][0]['update'][0]['val']['level-database']:
+                                            node_net_id = str(tlv['lsp-id'])[:-3]
+                                            node_ip = str(tlv['defined-tlvs']['ipv4-interface-addresses'][0])
+                                            
+                                            if node_ip == notif_ip_addr:
+                                                ## - Creates a new entry for new node joining 
+                                                new_isis_node['net_id'] = AREA_ID +'.'+node_net_id
+                                                if 'extended-is-reachability' in tlv['defined-tlvs']:
+                                                    for neighbor in tlv['defined-tlvs']['extended-is-reachability']:
+                                                        ## - Directly connected nodes are at a distance metric of 10
+                                                        if neighbor['default-metric'] == 10:
+                                                            neighbor_net = AREA_ID+'.'+str(neighbor['neighbor'])
+                                                            new_isis_node['neighbors_net_id'].append(neighbor_net)
+                                                if notification.op == 1:
+                                                    ## - An update on a node means cleaning its existing information and setting new data
+                                                    index = ""
+                                                    for i in range(len(state.isis_nodes)):
+                                                        if state.isis_nodes[i]['ip_addr'] == node_ip:
+                                                            index = i
+                                                    if index != "":
+                                                        state.isis_nodes.pop(index)
+
+                                            else:
+                                                if node_ip == state.sys_ip:
+                                                    ## - Include the neighbors of this node (me) : updates every time a notif arrives
+                                                    i_am_in_list = False
+                                                    me_net = AREA_ID +'.'+node_net_id
+                                                    me_isis_node = { 'ip_addr' : node_ip, 'net_id' : me_net, 'neighbors_ip' : [], 'neighbors_net_id' : [] }
                                                     for e in state.isis_nodes:
                                                         if e['ip_addr'] == node_ip:
-                                                            if 'extended-is-reachability' in tlv['defined-tlvs']:
-                                                                for neighbor in tlv['defined-tlvs']['extended-is-reachability']:
-                                                                    ## - Directly connected nodes are at a distance metric of 10
-                                                                    if neighbor['default-metric'] == 10:
-                                                                        neighbor_net = AREA_ID+'.'+str(neighbor['neighbor'])
-                                                                        if neighbor_net not in e['neighbors_net_id']:
-                                                                            e['neighbors_net_id'].append(neighbor_net)
-
-                                    state.isis_nodes.append(new_isis_node)
-                                    fillNodesNeighbors(state)
+                                                            i_am_in_list = True
+                                                            break
+                                                    if not i_am_in_list:
+                                                        state.isis_nodes.append(me_isis_node)
+                                                ## - Besides updating me, it also updates previously joined nodes
+                                                ## - Avoiding missing information regarding a node that joins later and connects with a previously known node that is not updated with this new neighbor's NET ID        
+                                                for e in state.isis_nodes:
+                                                    if e['ip_addr'] == node_ip:
+                                                        if 'extended-is-reachability' in tlv['defined-tlvs']:
+                                                            e['neighbors_net_id'] = []
+                                                            e['neighbors_ip'] = []
+                                                            for neighbor in tlv['defined-tlvs']['extended-is-reachability']:
+                                                                ## - Directly connected nodes are at a distance metric of 10
+                                                                if neighbor['default-metric'] == 10:
+                                                                    neighbor_net = AREA_ID+'.'+str(neighbor['neighbor'])
+                                                                    if neighbor_net not in e['neighbors_net_id']:
+                                                                        e['neighbors_net_id'].append(neighbor_net)
+                                
+                                state.isis_nodes.append(new_isis_node)
+                                fillNodesNeighbors(state)
+                                if notification.op == 0:
                                     logging.info(f"[IS-IS] :: Node {notif_ip_addr} joined the network topology")
-                                    
                                 elif notification.op == 1:
-                                    ## - A route has changed (e.g. one of the other node's interface has shutdown)
-                                    logging.info(f"!! 1 !! {str(notification.data)}")
-                                    """
-                                    if 'update' in tlvs['notification'][0]:
-                                            if tlvs['notification'][0]['update'][0]['val']['level-database']:
-                                                for tlv in tlvs['notification'][0]['update'][0]['val']['level-database']:
-                                                    node_net_id = str(tlv['lsp-id'])[:-3]
-                                                    node_ip = str(tlv['defined-tlvs']['ipv4-interface-addresses'][0])
-                                                    logging.info(f"[ISIS NODE] :: {node_net_id} is {node_ip}")
-                                                    if 'extended-is-reachability' in tlv['defined-tlvs']:
-                                                        for neighbor in tlv['defined-tlvs']['extended-is-reachability']:
-                                                            ## - Directly connected nodes are at a distance metric of 10
-                                                            if neighbor['default-metric'] == 10:
-                                                                logging.info(f"[ISIS NEIGHBOR] :: {neighbor['neighbor']}")
-                                    """
-                                ## - Check if IP address also in local state
-                                #TODO
-                                #state.isis_nodes = [ {ip_addr : 1.1.1.1, net_id : 49.0001.1A0D.00FF.0000.00, neighbors_ip : [ {ip_addr:2.2.2.2}, ...], neighbors_net_id } ]
-
+                                    logging.info(f"[IS-IS] :: Node {notif_ip_addr} has changed in the topology")
+                     
             ## - Notification is DELETE (value: 2)
             elif notification.op == 2:
                 index = ""
@@ -304,7 +298,7 @@ def handle_RouteNotification(notification: Notification, state, state_lock, gnmi
                             if n_ip == notif_ip_addr:
                                 n['neighbors_ip'].remove(n_ip)
         
-        logging.info(f"[IS-IS] :: Updated information regarding each node in the IS-IS topology:\n{json.dumps(state.isis_nodes, indent=4)}")
+            logging.info(f"[IS-IS] :: Updated information regarding each node in the IS-IS topology:\n{json.dumps(state.isis_nodes, indent=4)}")
 
 
 def handle_LldpNeighborNotification(notification: Notification, state, state_lock, gnmiclient) -> None:
