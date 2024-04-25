@@ -18,6 +18,7 @@ import time
 import datetime
 import signal
 import socket
+import ipaddress
 import json
 import threading
 import random
@@ -117,7 +118,7 @@ class State(object):
     def __init__(self):
         self.lldp_neighbors = []
         self.new_lldp_notification = False
-        self.isis_nodes = [] #[ {ip_addr : 1.1.1.1, net_id : 49.0001.1A0D.00FF.0000.00, neighbors_ip : [ {ip_addr:2.2.2.2}, ...], neighbors_net_id } ]
+        self.isis_nodes = [] #[ {role : leaf, ip_addr : 1.1.1.1, net_id : 49.0001.1A0D.00FF.0000.00, neighbors_ip : [ {ip_addr:2.2.2.2}, ...], neighbors_net_id } ]
         self.underlay_protocol = ""
         self.net_id = ""
         self.sys_ip = ""
@@ -175,6 +176,16 @@ def fillNodesNeighbors(state):
                         node['neighbors_ip'].append(other_node['ip_addr'])
                         break
 
+def orderIPs(ip_list):
+    try:
+        ip_objects = []
+        for ip in ip_list:
+            ip_objects.append(ipaddress.ip_address(ip))
+        ip_objects.sort()
+        return ip_objects
+    except ValueError as e:
+        logging.info(f"[ERROR] :: Invalid IP address format: {e}")
+    
 
 #####################################################
 ####            THE AGENT'S MAIN LOGIC           ####
@@ -206,7 +217,6 @@ def handle_RouteNotification(notification: Notification, state, state_lock, gnmi
     if node_ip_add != '0.0.0.0' and 1 <= int(node_ip_add.split('.')[0]) <= 223 and len(node_ip_add.split('.')) == 4:
         #logging.info(f"[ROUTE NOTIFICATION] :: {str(notification)}")
         if state.underlay_protocol == 'IS-IS':
-
             ## - Notification is CREATE (value: 0) or UPDATE (value: 1)
             if notification.op == 0 or notification.op == 1:
                 ## - Check if IP address is in routing table
@@ -277,7 +287,7 @@ def handle_RouteNotification(notification: Notification, state, state_lock, gnmi
                                     logging.info(f"[IS-IS] :: Node {notif_ip_addr} joined the network topology")
                                 elif notification.op == 1:
                                     logging.info(f"[IS-IS] :: Node {notif_ip_addr} has changed in the topology")
-                     
+                                break
             ## - Notification is DELETE (value: 2)
             elif notification.op == 2:
                 index = ""
@@ -299,6 +309,17 @@ def handle_RouteNotification(notification: Notification, state, state_lock, gnmi
                                 n['neighbors_ip'].remove(n_ip)
         
             logging.info(f"[IS-IS] :: Updated information regarding each node in the IS-IS topology:\n{json.dumps(state.isis_nodes, indent=4)}")
+            
+        ## - Order all IP addresses from the IS-IS routing table
+        list_ips = []
+        for node in range(len(state.isis_nodes)):
+            list_ips.append(state.isis_nodes[node]['ip_addr'])
+        list_ips = orderIPs(list_ips)
+        #logging.info("IPs SORTED :: ")
+        #for ip in range(len(list_ips)):
+        #    logging.info(f"{str(list_ips[ip])}")
+        #TODO ## - Associate a number to each IP addresses 
+        #TODO ## - Run the algorithm to find the role of each node
 
 
 def handle_LldpNeighborNotification(notification: Notification, state, state_lock, gnmiclient) -> None:
