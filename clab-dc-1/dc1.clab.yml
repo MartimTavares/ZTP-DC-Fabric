@@ -21,6 +21,7 @@ topology:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
         ## - Python Script:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.py:/etc/opt/srlinux/appmgr/user_agents/configurationless.py:rw
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/nodesRolesAlgorithm.py:/etc/opt/srlinux/appmgr/user_agents/algorithms/nodesRolesAlgorithm.py:rw
         ## - Input file to originate CA
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/clab-dc-1/clab-dc1/.tls/ca/ca.pem:/ca.pem:rw
       exec:
@@ -38,6 +39,7 @@ topology:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
         ## - Python Script:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.py:/etc/opt/srlinux/appmgr/user_agents/configurationless.py:rw
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/nodesRolesAlgorithm.py:/etc/opt/srlinux/appmgr/user_agents/algorithms/nodesRolesAlgorithm.py:rw
         ## - Input file to originate CA
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/clab-dc-1/clab-dc1/.tls/ca/ca.pem:/ca.pem:rw
       exec:
@@ -55,6 +57,7 @@ topology:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
         ## - Python Script:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.py:/etc/opt/srlinux/appmgr/user_agents/configurationless.py:rw
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/nodesRolesAlgorithm.py:/etc/opt/srlinux/appmgr/user_agents/algorithms/nodesRolesAlgorithm.py:rw
         ## - Input file to originate CA
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/clab-dc-1/clab-dc1/.tls/ca/ca.pem:/ca.pem:rw
       exec:
@@ -72,6 +75,7 @@ topology:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
         ## - Python Script:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.py:/etc/opt/srlinux/appmgr/user_agents/configurationless.py:rw
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/nodesRolesAlgorithm.py:/etc/opt/srlinux/appmgr/user_agents/algorithms/nodesRolesAlgorithm.py:rw
         ## - Input file to originate CA
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/clab-dc-1/clab-dc1/.tls/ca/ca.pem:/ca.pem:rw
       exec:
@@ -89,6 +93,7 @@ topology:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
         ## - Python Script:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.py:/etc/opt/srlinux/appmgr/user_agents/configurationless.py:rw
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/nodesRolesAlgorithm.py:/etc/opt/srlinux/appmgr/user_agents/algorithms/nodesRolesAlgorithm.py:rw
         ## - Input file to originate CA
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/clab-dc-1/clab-dc1/.tls/ca/ca.pem:/ca.pem:rw
       exec:

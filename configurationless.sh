@@ -23,6 +23,7 @@ function main() {
     ip netns exec srbase-mgmt pip3 install srlinux-ndk
     ip netns exec srbase-mgmt pip3 install pygnmi
     ip netns exec srbase-mgmt pip3 install 'protobuf>3.20'
+    ip netns exec srbase-mgmt pip3 install numpy
 
     sr_cli --candidate-mode acl cpm-filter ipv4-filter entry 1 match protocol tcp
     sr_cli --candidate-mode --commit-at-end acl cpm-filter ipv4-filter entry 1 action accept 

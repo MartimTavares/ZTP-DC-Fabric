@@ -129,9 +129,12 @@ def nodesRolesAlgorithm(g):
     leaves=[]
     spines=[]
     super_spines=[]
-    dcgw=[]
+    border=[]
 
     #Condition to check if topology is greater than one pod
+    if len(all_hop_count) == 0:
+        return [], [], [], []
+
     max_min_hop_count = int(max(all_hop_count))
 
     if max_min_hop_count < 4: #It is a one Pod topology
@@ -188,7 +191,7 @@ def nodesRolesAlgorithm(g):
                 if len(intersect(nodes,leaves4_temp[i][0]))==0:
                     leaves4.append(leaves4_temp[i])
                     nodes = nodes + leaves4_temp[i][0]
-        
+            
             #Although some leaves may not be connected to all spines, they should be 
             #included in the respective group in leaves4
             indexes_zeroed = []
@@ -222,22 +225,26 @@ def nodesRolesAlgorithm(g):
             
             #Assign the roles
             for i in range(len(leaves4)):
-                leaves.append(leaves4[i][0])
-                spines.append(leaves4[i][1])
+                for s in leaves4[i][0]:
+                    if s not in leaves:
+                        leaves.append(s)
+            for i in range(len(leaves4)):
+                for s in leaves4[i][1]:
+                    if s not in spines and s not in leaves:
+                        spines.append(s)
+            for i in range(len(leaves4)):
                 #Retrieve super-spines
                 for e in range(len(eqgroups)):
                     if len(intersect(leaves4[i][1], eqgroups[e][0])) != 0:
                         for l in range(len(eqgroups[e][1])):
-                            if (eqgroups[e][1][l] not in leaves4[i][0]) and (eqgroups[e][1][l] not in super_spines):
+                            if (eqgroups[e][1][l] not in leaves4[i][0]) and (eqgroups[e][1][l] not in super_spines) and (eqgroups[e][1][l] not in leaves) and (eqgroups[e][1][l] not in spines):
                                 super_spines.append(eqgroups[e][1][l])
                     
-            #Retrieve dcgw (the nodes left in the topology)
-            leaves_aux = [item for sublist in leaves for item in sublist]  
-            spines_aux = [item for sublist in spines for item in sublist]  
-            set_nodes = leaves_aux + spines_aux + super_spines
+            #Retrieve border-leaves (the nodes left in the topology)
+            set_nodes = leaves + spines + super_spines
             nodes = [e for e in range(numNodes)]
             nodes.pop(0)
             
-            dcgw = list(set(nodes) - set(set_nodes))    
+            border = list(set(nodes) - set(set_nodes))    
 
-    return leaves, spines, super_spines, dcgw 
+    return leaves, spines, super_spines, border 

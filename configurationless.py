@@ -9,7 +9,7 @@
 ## Description: A Python script to ...
 ##################################################################################################
 """
-
+from algorithms.nodesRolesAlgorithm import nodesRolesAlgorithm
 import grpc
 import ctypes
 import os
@@ -69,6 +69,7 @@ UNDERLAY_PROTOCOL = 'IS-IS' # can be changed to OSPFv3
 AREA_ID = '49.0001'
 ISIS_INSTANCE = 'i1'
 ISIS_LEVEL_CAPABILITY = 'L1'
+RR_NUMBER = 2
 
 event_types = ['intf', 'nw_inst', 'lldp', 'route', 'cfg']
 
@@ -76,6 +77,7 @@ event_types = ['intf', 'nw_inst', 'lldp', 'route', 'cfg']
 #####################################################
 ####     METHODS TO CREATE THE NOTIFICATIONS     ####
 #### SUBSCRIPTION UPON DIFFERENT TYPES OF EVENTS ####
+
 def subscribe(stream_id, option):
     op = NotificationRegisterRequest.AddSubscription
     
@@ -110,6 +112,7 @@ def subscribeNotifications(stream_id):
 
 #####################################################
 ####         AUXILIARY METHODS and classes       ####
+
 def containString(longer_word, smaller_word):
     return smaller_word in longer_word
 
@@ -123,6 +126,11 @@ class State(object):
         self.net_id = ""
         self.sys_ip = ""
         self.mac = ""
+        self.route_reflectors = []
+        self.leaves = []
+        self.spines = []
+        self.super_spines = []
+        self.borders = []
 
     def __str__(self):
         return str(self.__class__) + ": " + str(self.__dict__)
@@ -189,33 +197,14 @@ def orderIPs(ip_list):
 
 #####################################################
 ####            THE AGENT'S MAIN LOGIC           ####
-"""
-def underlayThread(state, state_lock):
-    logging.info(f"[THREAD] :: Underlay thread started")
-    copy_of_state = deepcopy(state)
-    while True:
-        if state.new_lldp_notification == True:
-            ## - Handle new changes
-            #logging.info(f"[LAST STATE] :: {copy_of_state.lldp_neighbors}")
-            #logging.info(f"[NEW STATE] :: {state.lldp_neighbors}")
-            #[{'neighbor_chassis': '1A:7E:08:FF:00:00', 'sys_name': 'SRLinux', 'neighbor_int': 
-            #'ethernet-1/1', 'local_int': 'ethernet-1/49'}, {'neighbor_chassis': '1A:CE:09:FF:00:00',
-            #'sys_name': 'SRLinux', 'neighbor_int': 'ethernet-1/1', 'local_int': 'ethernet-1/50'}]
-            with state_lock:
-                for neighbor in state.lldp_neighbors:
-                    pass
-                state.new_lldp_notification = False
-                copy_of_state = deepcopy(state)
-        time.sleep(10)
-"""
 
-def handle_RouteNotification(notification: Notification, state, state_lock, gnmiclient) -> None:
+def handle_RouteNotification(notification: Notification, state, gnmiclient) -> None:
     node_ip_add = ".".join(str(byte) for byte in notification.key.ip_prefix.ip_addr.addr)
     node_ip_add.split('.')
     notif_ip_addr = str(node_ip_add)
     ## - Check if it is a valid IP address for a node loopback
     if node_ip_add != '0.0.0.0' and 1 <= int(node_ip_add.split('.')[0]) <= 223 and len(node_ip_add.split('.')) == 4:
-        #logging.info(f"[ROUTE NOTIFICATION] :: {str(notification)}")
+        state.route_reflectors = []
         if state.underlay_protocol == 'IS-IS':
             ## - Notification is CREATE (value: 0) or UPDATE (value: 1)
             if notification.op == 0 or notification.op == 1:
@@ -308,21 +297,87 @@ def handle_RouteNotification(notification: Notification, state, state_lock, gnmi
                             if n_ip == notif_ip_addr:
                                 n['neighbors_ip'].remove(n_ip)
         
-            logging.info(f"[IS-IS] :: Updated information regarding each node in the IS-IS topology:\n{json.dumps(state.isis_nodes, indent=4)}")
+            #logging.info(f"[IS-IS] :: Updated information regarding each node in the IS-IS topology:\n{json.dumps(state.isis_nodes, indent=4)}")
             
         ## - Order all IP addresses from the IS-IS routing table
         list_ips = []
         for node in range(len(state.isis_nodes)):
             list_ips.append(state.isis_nodes[node]['ip_addr'])
         list_ips = orderIPs(list_ips)
-        #logging.info("IPs SORTED :: ")
-        #for ip in range(len(list_ips)):
-        #    logging.info(f"{str(list_ips[ip])}")
-        #TODO ## - Associate a number to each IP addresses 
-        #TODO ## - Run the algorithm to find the role of each node
+
+        ## - Create list g with each index corresponding to a node and the value is a list with ids of neighbors. These ids correspond to the index of the list_ips.
+        nodes_str = ''
+        str_list_ips = ['idex_0']
+        g = [[0,0]]
+        for e in range(len(list_ips)):
+            str_list_ips.append(str(list_ips[e]))
+        for e in range(len(str_list_ips)):
+            for i in range(len(state.isis_nodes)):
+                if state.isis_nodes[i]['ip_addr'] == str_list_ips[e]:
+                    neighbors = state.isis_nodes[i]['neighbors_ip']
+                    nodes_str += str(state.isis_nodes[i]['ip_addr']) + ' : ' + str(neighbors) + '\n'
+                    node_neighbors = []
+                    for nei in range(len(neighbors)):
+                        for l in range(len(str_list_ips)):
+                            if neighbors[nei] == str_list_ips[l]:
+                                node_neighbors.append(l)
+                    g.append(node_neighbors)
+        logging.info(f"[IS-IS] :: Updated information regarding each node in the IS-IS topology:\n{nodes_str}")
+
+        ## - Run the Roles Algorithm: g = [ [0,0], [one node], [needs one more node] ]
+        leaves, spines, super_spines, border = [], [], [], []
+        leaves_aux, spines_aux, super_spines_aux, border_aux = [], [], [], []
+        if len(g) >= 3:
+            leaves_aux, spines_aux, super_spines_aux, border_aux = nodesRolesAlgorithm(g)
+        
+        ## - Convert the IDs in the lists to the IPv4 addresses
+        for e in range(len(leaves_aux)):
+            leaves.append(str_list_ips[leaves_aux[e]])
+        for e in range(len(spines_aux)):
+            spines.append(str_list_ips[spines_aux[e]])
+        for e in range(len(super_spines_aux)):
+            super_spines.append(str_list_ips[super_spines_aux[e]])
+        for e in range(len(border_aux)):
+            border.append(str_list_ips[border_aux[e]])
+
+        logging.info(f"Leaves: {str(leaves)}\nSpines: {str(spines)}\nSuper-Spines:{str(super_spines)}\nBorder-Leaves:{str(border)}\n")
+
+        ## - Choose 2 Route Reflectors and configure them.
+        if (len(leaves) + len(spines) + len(super_spines) + len(border)) > 2:
+            if state.leaves != leaves or state.spines != spines or state.super_spines != super_spines or state.borders != border:
+                ## - Only change info if a change in the roles occured.
+                elected_rr = []
+                if len(super_spines) > 0:
+                    for e in range(len(super_spines)):
+                        if len(elected_rr) < RR_NUMBER:
+                            elected_rr.append(super_spines[e])
+                        else:
+                            break
+                if len(elected_rr) < RR_NUMBER and len(spines) > 0:
+                    for e in range(len(spines)):
+                        if len(elected_rr) < RR_NUMBER:
+                            elected_rr.append(spines[e])
+                        else:
+                            break
+                if len(elected_rr) < RR_NUMBER and len(leaves) > 0:
+                    for e in range(len(leaves)):
+                        if len(elected_rr) < RR_NUMBER:
+                            elected_rr.append(leaves[e])
+                        else:
+                            break
+                ## - Only change a RR if it changed.
+                logging.info(f"RR: {str(elected_rr)}")
+                for e in range(len(elected_rr)):
+                    pass
+                    #TODO#state.route_reflectors = []
+                ## - Update the role of each node
+                state.leaves = leaves
+                state.spines = spines
+                state.super_pines = super_spines
+                state.borders = border
 
 
-def handle_LldpNeighborNotification(notification: Notification, state, state_lock, gnmiclient) -> None:
+def handle_LldpNeighborNotification(notification: Notification, state, gnmiclient) -> None:
     interface_name = str(notification.key.interface_name)
     system_name = str(notification.data.system_description) 
     if containString(system_name, NOS_TYPE):
@@ -375,57 +430,58 @@ def handle_LldpNeighborNotification(notification: Notification, state, state_loc
         routing_conf = instance_isis
     create_updates = []
     delete_updates = []
-    with state_lock:
-        ## - Notification is CREATE (value: 0)
-        if notification.op == 0:
-            if state.underlay_protocol == 'IS-IS':
-                create_updates = [
+    
+    ## - Notification is CREATE (value: 0)
+    if notification.op == 0:
+        if state.underlay_protocol == 'IS-IS':
+            create_updates = [
+                (f'/interface[name={interface_name}]', int_conf),
+                ('/network-instance[name=default]', net_inst),
+                ('/network-instance[name=default]/protocols/isis', routing_conf)
+            ]
+        result = gnmiclient.set(update=create_updates, encoding="json_ietf")
+        logging.info('[gNMIc] :: ' + f'{result}')
+        logging.info(f"[NEW NEIGHBOR] :: {source_chassis}, {system_name}, {port_id}, {interface_name}")
+        state.lldp_neighbors.append(neighbor)
+    ## - Notification is DELETE (value: 2)
+    elif notification.op == 2:
+        for i in state.lldp_neighbors[:]:
+            if i[LOCAL_INT] == neighbor[LOCAL_INT] and i[NEIGHBOR_CHASSIS] == neighbor[NEIGHBOR_CHASSIS]:
+                int_conf['admin-state'] = "disable"
+                int_conf['subinterface'][0]['admin-state'] = "disable"
+                int_conf['subinterface'][0]['ipv4']['admin-state'] = "disable"
+                int_conf['subinterface'][0]['ipv4']['unnumbered']['admin-state'] = "disable"
+                if state.underlay_protocol == 'IS-IS':
+                    routing_conf['instance'][0]['interface'][0]['admin-state'] = "disable"
+                delete_updates = [
                     (f'/interface[name={interface_name}]', int_conf),
-                    ('/network-instance[name=default]', net_inst),
                     ('/network-instance[name=default]/protocols/isis', routing_conf)
                 ]
-            result = gnmiclient.set(update=create_updates, encoding="json_ietf")
-            logging.info('[gNMIc] :: ' + f'{result}')
-            logging.info(f"[NEW NEIGHBOR] :: {source_chassis}, {system_name}, {port_id}, {interface_name}")
-            state.lldp_neighbors.append(neighbor)
-        ## - Notification is DELETE (value: 2)
-        elif notification.op == 2:
-            for i in state.lldp_neighbors[:]:
-                if i[LOCAL_INT] == neighbor[LOCAL_INT] and i[NEIGHBOR_CHASSIS] == neighbor[NEIGHBOR_CHASSIS]:
-                    int_conf['admin-state'] = "disable"
-                    int_conf['subinterface'][0]['admin-state'] = "disable"
-                    int_conf['subinterface'][0]['ipv4']['admin-state'] = "disable"
-                    int_conf['subinterface'][0]['ipv4']['unnumbered']['admin-state'] = "disable"
-                    if state.underlay_protocol == 'IS-IS':
-                        routing_conf['instance'][0]['interface'][0]['admin-state'] = "disable"
-                    delete_updates = [
-                        (f'/interface[name={interface_name}]', int_conf),
-                        ('/network-instance[name=default]/protocols/isis', routing_conf)
-                    ]
-                    result = gnmiclient.set(update=delete_updates, encoding="json_ietf")
-                    logging.info('[gNMIc] :: ' + f'{result}')
-                    for conf in result['response']:
-                        if str(conf['path']) == f'interface[name={interface_name}]':
-                            logging.info(f"[REMOVED NEIGHBOR] :: {i[NEIGHBOR_CHASSIS]}, {i[SYS_NAME]}, {i[NEIGHBOR_INT]}, {i[LOCAL_INT]}")
-                            state.lldp_neighbors.remove(i)
-        ## - Notification is CHANGE (value: 1)
-        else:
-            pass
-            # TODO
-        state.new_lldp_notification = True
+                result = gnmiclient.set(update=delete_updates, encoding="json_ietf")
+                logging.info('[gNMIc] :: ' + f'{result}')
+                for conf in result['response']:
+                    if str(conf['path']) == f'interface[name={interface_name}]':
+                        logging.info(f"[REMOVED NEIGHBOR] :: {i[NEIGHBOR_CHASSIS]}, {i[SYS_NAME]}, {i[NEIGHBOR_INT]}, {i[LOCAL_INT]}")
+                        state.lldp_neighbors.remove(i)
+    ## - Notification is CHANGE (value: 1)
+    else:
+        pass
+        # TODO
+    state.new_lldp_notification = True
     
 
-def handleNotification(notification: Notification, state, state_lock, gnmiclient)-> None:
+def handleNotification(notification: Notification, state, gnmiclient)-> None:
     if notification.HasField('lldp_neighbor'):
-        handle_LldpNeighborNotification(notification.lldp_neighbor, state, state_lock, gnmiclient)
+        handle_LldpNeighborNotification(notification.lldp_neighbor, state, gnmiclient)
     if notification.HasField("route"):
-        handle_RouteNotification(notification.route, state, state_lock, gnmiclient)
+        handle_RouteNotification(notification.route, state, gnmiclient)
     return False
 
 
 #####################################################
 ####       MAIN FUNCTIONS TO INITIALIZE THE      ####
 ####            AGENT AND THE LOG FILES          ####
+
 def Run(hostname):
     ## - Register Application with the NDK manager
     register_request = AgentRegistrationRequest()
@@ -454,8 +510,6 @@ def Run(hostname):
         ## - Agent's main logic: upon receiving notifications evolve the system according with the new topology.
         state = State()
         state.underlay_protocol = UNDERLAY_PROTOCOL
-        ## - Thread locker so that different threads and the main process don't see outdated data
-        state_lock = threading.Lock()
 
         ## - gNMI Server connection variables: default port for gNMI server is 57400
         gnmic_host = (hostname, GNMI_PORT) #172.20.20.11, 'clab-dc1-leaf1'
@@ -561,7 +615,7 @@ def Run(hostname):
                     if obj.HasField('config') and obj.config.key.js_path == ".commit.end":
                         logging.info('[TO DO] :: -commit.end config')
                     else:
-                        handleNotification(obj, state, state_lock, gc)
+                        handleNotification(obj, state, gc)
 
     except grpc._channel._Rendezvous as err:
         logging.info(f"[EXITING NOW] :: {str(err)}")
