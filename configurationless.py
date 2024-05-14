@@ -6,7 +6,13 @@
 ## File: configurationless.py
 ## Author: Martim Carvalhosa Tavares
 ## Date: 2024-03-05
-## Description: A Python script to ...
+## Description: A Python script used by a SR Linux NDK agent to optimize the automation in the DC.
+##              This optimization makes each SR Linux device able to automatically configure 
+##              itself, based on the information regarding its role in the DC topology.
+##              Using the information retrieved from LLDP messages, the device enables the underlay
+##              routing with the ports connecting to other SR Linux devices. Once the underlay is
+##              enabled, it learns the whole network topology and infers the role of each node in
+##              order to elect the 2 Route Reflectors, thus setting up the overlay infrastructure.
 ##################################################################################################
 """
 from algorithms.nodesRolesAlgorithm import nodesRolesAlgorithm
@@ -70,6 +76,7 @@ AREA_ID = '49.0001'
 ISIS_INSTANCE = 'i1'
 ISIS_LEVEL_CAPABILITY = 'L1'
 RR_NUMBER = 2
+IBGP_ASN = '100'
 
 event_types = ['intf', 'nw_inst', 'lldp', 'route', 'cfg']
 
@@ -193,6 +200,23 @@ def orderIPs(ip_list):
         return ip_objects
     except ValueError as e:
         logging.info(f"[ERROR] :: Invalid IP address format: {e}")
+
+def delete_ibgp(sys_ip, gnmiclient):
+    delete = {
+                'admin-state' : 'disable',
+                'autonomous-system' : f'{IBGP_ASN}',
+                'router-id' : f'{sys_ip}',
+                'afi-safi' : [ {
+                    'afi-safi-name' : 'evpn',
+                    'admin-state' : 'disable'
+                }]
+            }
+    update = [ ('/network-instance[name=default]/protocols/bgp', delete) ]
+    result = gnmiclient.set(replace=update, encoding="json_ietf")
+    logging.info('[gNMIc] :: ' + f'{result}')
+    for conf in result['response']:
+        if str(conf['path']) == '/network-instance[name=default]/protocols/bgp':
+            logging.info('[OVERLAY] :: Removed all iBGP configurations')
     
 
 #####################################################
@@ -367,10 +391,99 @@ def handle_RouteNotification(notification: Notification, state, gnmiclient) -> N
                             break
                 ## - Only change a RR if it changed.
                 logging.info(f"RR: {str(elected_rr)}")
+                add_rr = []
+                remove_rr = []
+                for e in range(len(state.route_reflectors)):
+                    if state.route_reflectors[e] not in elected_rr:
+                        remove_rr.append(state.route_reflectors[e]) 
                 for e in range(len(elected_rr)):
-                    pass
-                    #TODO#state.route_reflectors = []
+                    if elected_rr[e] not in state.route_reflectors:
+                        add_rr.append(elected_rr[e]) 
+
+                ## - Set up the overlay infrastructure
+                if state.sys_ip in elected_rr or state.sys_ip in leaves:
+                    delete_ibgp(state.sys_ip, gnmiclient)
+                    overlay = {
+                                'admin-state' : 'enable',
+                                'autonomous-system' : f'{IBGP_ASN}',
+                                'router-id' : f'{state.sys_ip}',
+                                'group' : [ {
+                                    'group-name' : 'overlay',
+                                    'admin-state' : 'enable',
+                                    'export-policy' : 'all',
+                                    'import-policy' : 'all',
+                                    'peer-as' : f'{IBGP_ASN}',
+                                    'local-as' : 
+                                        { 'as-number' : f'{IBGP_ASN}' }
+                                    ,
+                                    'afi-safi' : [
+                                        {
+                                            'afi-safi-name' : 'ipv4-unicast',
+                                            'admin-state' : 'disable'
+                                        },
+                                        {
+                                            'afi-safi-name' : 'ipv6-unicast',
+                                            'admin-state' : 'disable'
+                                        },
+                                        {
+                                            'afi-safi-name' : 'evpn',
+                                            'admin-state' : 'enable'
+                                        }
+                                    ]
+                                }],
+                                'afi-safi' : [ {
+                                    'afi-safi-name' : 'evpn',
+                                    'admin-state' : 'enable'
+                                }]
+                            }
+                    if state.sys_ip in leaves:
+                        for l in range(RR_NUMBER-1):
+                            if 'neighbor' not in overlay:
+                                overlay['neighbor'] = [ {
+                                    'peer-address' : f'{elected_rr[l]}',
+                                    'admin-state' : 'enable',
+                                    'peer-group' : 'overlay'
+                                }]
+                            else:
+                                overlay['neighbor'].append({
+                                    'peer-address' : f'{elected_rr[l]}',
+                                    'admin-state' : 'enable',
+                                    'peer-group' : 'overlay'
+                                })
+                    elif state.sys_ip in elected_rr:
+                        for group in range(len(overlay['group'])):
+                            if overlay['group'][group]['group-name'] == 'overlay':
+                                overlay['group'][group]['route-reflector'] = {
+                                    'client' : 'true',
+                                    'cluster-id' : f'{state.sys_ip}'
+                                }
+                        for l in range(len(leaves)):
+                            if 'neighbor' not in overlay:
+                                overlay['neighbor'] = [ {
+                                    'peer-address' : f'{leaves[l]}',
+                                    'admin-state' : 'enable',
+                                    'peer-group' : 'overlay'
+                                }]
+                            else:
+                                overlay['neighbor'].append({
+                                    'peer-address' : f'{leaves[l]}',
+                                    'admin-state' : 'enable',
+                                    'peer-group' : 'overlay'
+                                })
+
+                    update = [ ('/network-instance[name=default]/protocols/bgp', overlay) ]
+                    result = gnmiclient.set(update=update, encoding="json_ietf")
+                    logging.info('[gNMIc] :: ' + f'{result}')
+                    for conf in result['response']:
+                        if str(conf['path']) == '/network-instance[name=default]/protocols/bgp':
+                            logging.info('[OVERLAY] :: iBGP initialized with ASN ' + f'{IBGP_ASN}')
+                else:
+                    ## - Delete any bgp configuration: If no longer is a leaf or a RR.
+                    if state.sys_ip in state.leaves or state.sys_ip in state.route_reflectors:
+                        delete_ibgp(state.sys_ip, gnmiclient)
+
                 ## - Update the role of each node
+                state.route_reflectors = elected_rr
                 state.leaves = leaves
                 state.spines = spines
                 state.super_pines = super_spines
@@ -601,11 +714,6 @@ def Run(hostname):
 
             elif state.underlay_protocol == 'OSPFv3':
                 pass #TODO
-            
-            ## - Thread responsible for checking interfaces with transceivers and enable the routing protocol on those interfaces
-            #TODO
-            #underlay_thread = threading.Thread(target=underlayThread, args=(state, state_lock,))
-            #underlay_thread.start()
 
             ## - New notifications incoming
             count = 0
