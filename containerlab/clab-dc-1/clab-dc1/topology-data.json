@@ -1,0 +1,641 @@
+{
+  "name": "dc1",
+  "type": "clab",
+  "clab": {
+    "config": {
+      "prefix": "clab",
+      "mgmt": {
+        "network": "clab",
+        "bridge": "br-2ad09c0ca967",
+        "ipv4-subnet": "172.20.20.0/24",
+        "ipv4-gw": "172.20.20.1",
+        "ipv6-subnet": "2001:172:20:20::/64",
+        "ipv6-gw": "2001:172:20:20::1",
+        "mtu": 1500,
+        "external-access": true
+      }
+    }
+  },
+  "nodes": {
+    "border1": {
+      "index": "0",
+      "shortname": "border1",
+      "longname": "clab-dc1-border1",
+      "fqdn": "border1.dc1.io",
+      "group": "",
+      "labdir": "/home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/clab-dc1/border1",
+      "kind": "srl",
+      "image": "ghcr.io/nokia/srlinux",
+      "mgmt-net": "",
+      "mgmt-intf": "",
+      "mgmt-ipv4-address": "172.20.20.16",
+      "mgmt-ipv4-prefix-length": 24,
+      "mgmt-ipv6-address": "2001:172:20:20::10",
+      "mgmt-ipv6-prefix-length": 64,
+      "mac-address": "",
+      "labels": {
+        "clab-mgmt-net-bridge": "br-2ad09c0ca967",
+        "clab-node-group": "",
+        "clab-node-kind": "srl",
+        "clab-node-lab-dir": "/home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/clab-dc1/border1",
+        "clab-node-name": "border1",
+        "clab-node-type": "ixrd3",
+        "clab-topo-file": "/home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/dc1.clab.yml",
+        "containerlab": "dc1"
+      },
+      "port-bindings": [
+      ]
+    },
+    "border2": {
+      "index": "1",
+      "shortname": "border2",
+      "longname": "clab-dc1-border2",
+      "fqdn": "border2.dc1.io",
+      "group": "",
+      "labdir": "/home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/clab-dc1/border2",
+      "kind": "srl",
+      "image": "ghcr.io/nokia/srlinux",
+      "mgmt-net": "",
+      "mgmt-intf": "",
+      "mgmt-ipv4-address": "172.20.20.20",
+      "mgmt-ipv4-prefix-length": 24,
+      "mgmt-ipv6-address": "2001:172:20:20::14",
+      "mgmt-ipv6-prefix-length": 64,
+      "mac-address": "",
+      "labels": {
+        "clab-mgmt-net-bridge": "br-2ad09c0ca967",
+        "clab-node-group": "",
+        "clab-node-kind": "srl",
+        "clab-node-lab-dir": "/home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/clab-dc1/border2",
+        "clab-node-name": "border2",
+        "clab-node-type": "ixrd3",
+        "clab-topo-file": "/home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/dc1.clab.yml",
+        "containerlab": "dc1"
+      },
+      "port-bindings": [
+      ]
+    },
+    "leaf1": {
+      "index": "2",
+      "shortname": "leaf1",
+      "longname": "clab-dc1-leaf1",
+      "fqdn": "leaf1.dc1.io",
+      "group": "",
+      "labdir": "/home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/clab-dc1/leaf1",
+      "kind": "srl",
+      "image": "ghcr.io/nokia/srlinux",
+      "mgmt-net": "",
+      "mgmt-intf": "",
+      "mgmt-ipv4-address": "172.20.20.15",
+      "mgmt-ipv4-prefix-length": 24,
+      "mgmt-ipv6-address": "2001:172:20:20::f",
+      "mgmt-ipv6-prefix-length": 64,
+      "mac-address": "",
+      "labels": {
+        "clab-mgmt-net-bridge": "br-2ad09c0ca967",
+        "clab-node-group": "",
+        "clab-node-kind": "srl",
+        "clab-node-lab-dir": "/home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/clab-dc1/leaf1",
+        "clab-node-name": "leaf1",
+        "clab-node-type": "ixrd2",
+        "clab-topo-file": "/home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/dc1.clab.yml",
+        "containerlab": "dc1"
+      },
+      "port-bindings": [
+      ]
+    },
+    "leaf2": {
+      "index": "3",
+      "shortname": "leaf2",
+      "longname": "clab-dc1-leaf2",
+      "fqdn": "leaf2.dc1.io",
+      "group": "",
+      "labdir": "/home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/clab-dc1/leaf2",
+      "kind": "srl",
+      "image": "ghcr.io/nokia/srlinux",
+      "mgmt-net": "",
+      "mgmt-intf": "",
+      "mgmt-ipv4-address": "172.20.20.13",
+      "mgmt-ipv4-prefix-length": 24,
+      "mgmt-ipv6-address": "2001:172:20:20::d",
+      "mgmt-ipv6-prefix-length": 64,
+      "mac-address": "",
+      "labels": {
+        "clab-mgmt-net-bridge": "br-2ad09c0ca967",
+        "clab-node-group": "",
+        "clab-node-kind": "srl",
+        "clab-node-lab-dir": "/home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/clab-dc1/leaf2",
+        "clab-node-name": "leaf2",
+        "clab-node-type": "ixrd2",
+        "clab-topo-file": "/home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/dc1.clab.yml",
+        "containerlab": "dc1"
+      },
+      "port-bindings": [
+      ]
+    },
+    "leaf3": {
+      "index": "4",
+      "shortname": "leaf3",
+      "longname": "clab-dc1-leaf3",
+      "fqdn": "leaf3.dc1.io",
+      "group": "",
+      "labdir": "/home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/clab-dc1/leaf3",
+      "kind": "srl",
+      "image": "ghcr.io/nokia/srlinux",
+      "mgmt-net": "",
+      "mgmt-intf": "",
+      "mgmt-ipv4-address": "172.20.20.12",
+      "mgmt-ipv4-prefix-length": 24,
+      "mgmt-ipv6-address": "2001:172:20:20::c",
+      "mgmt-ipv6-prefix-length": 64,
+      "mac-address": "",
+      "labels": {
+        "clab-mgmt-net-bridge": "br-2ad09c0ca967",
+        "clab-node-group": "",
+        "clab-node-kind": "srl",
+        "clab-node-lab-dir": "/home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/clab-dc1/leaf3",
+        "clab-node-name": "leaf3",
+        "clab-node-type": "ixrd2",
+        "clab-topo-file": "/home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/dc1.clab.yml",
+        "containerlab": "dc1"
+      },
+      "port-bindings": [
+      ]
+    },
+    "server11": {
+      "index": "5",
+      "shortname": "server11",
+      "longname": "clab-dc1-server11",
+      "fqdn": "server11.dc1.io",
+      "group": "",
+      "labdir": "/home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/clab-dc1/server11",
+      "kind": "linux",
+      "image": "ghcr.io/hellt/network-multitool",
+      "mgmt-net": "",
+      "mgmt-intf": "",
+      "mgmt-ipv4-address": "172.20.20.23",
+      "mgmt-ipv4-prefix-length": 24,
+      "mgmt-ipv6-address": "2001:172:20:20::17",
+      "mgmt-ipv6-prefix-length": 64,
+      "mac-address": "",
+      "labels": {
+        "clab-mgmt-net-bridge": "br-2ad09c0ca967",
+        "clab-node-group": "",
+        "clab-node-kind": "linux",
+        "clab-node-lab-dir": "/home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/clab-dc1/server11",
+        "clab-node-name": "server11",
+        "clab-node-type": "",
+        "clab-topo-file": "/home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/dc1.clab.yml",
+        "containerlab": "dc1"
+      },
+      "port-bindings": [
+        {
+          "host-ip": "",
+          "host-port": 0,
+          "port": 80,
+          "protocol": "tcp"
+        },
+        {
+          "host-ip": "",
+          "host-port": 0,
+          "port": 443,
+          "protocol": "tcp"
+        }
+      ]
+    },
+    "server13": {
+      "index": "6",
+      "shortname": "server13",
+      "longname": "clab-dc1-server13",
+      "fqdn": "server13.dc1.io",
+      "group": "",
+      "labdir": "/home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/clab-dc1/server13",
+      "kind": "linux",
+      "image": "ghcr.io/hellt/network-multitool",
+      "mgmt-net": "",
+      "mgmt-intf": "",
+      "mgmt-ipv4-address": "172.20.20.18",
+      "mgmt-ipv4-prefix-length": 24,
+      "mgmt-ipv6-address": "2001:172:20:20::12",
+      "mgmt-ipv6-prefix-length": 64,
+      "mac-address": "",
+      "labels": {
+        "clab-mgmt-net-bridge": "br-2ad09c0ca967",
+        "clab-node-group": "",
+        "clab-node-kind": "linux",
+        "clab-node-lab-dir": "/home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/clab-dc1/server13",
+        "clab-node-name": "server13",
+        "clab-node-type": "",
+        "clab-topo-file": "/home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/dc1.clab.yml",
+        "containerlab": "dc1"
+      },
+      "port-bindings": [
+        {
+          "host-ip": "",
+          "host-port": 0,
+          "port": 443,
+          "protocol": "tcp"
+        },
+        {
+          "host-ip": "",
+          "host-port": 0,
+          "port": 80,
+          "protocol": "tcp"
+        }
+      ]
+    },
+    "server21": {
+      "index": "7",
+      "shortname": "server21",
+      "longname": "clab-dc1-server21",
+      "fqdn": "server21.dc1.io",
+      "group": "",
+      "labdir": "/home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/clab-dc1/server21",
+      "kind": "linux",
+      "image": "ghcr.io/hellt/network-multitool",
+      "mgmt-net": "",
+      "mgmt-intf": "",
+      "mgmt-ipv4-address": "172.20.20.17",
+      "mgmt-ipv4-prefix-length": 24,
+      "mgmt-ipv6-address": "2001:172:20:20::11",
+      "mgmt-ipv6-prefix-length": 64,
+      "mac-address": "",
+      "labels": {
+        "clab-mgmt-net-bridge": "br-2ad09c0ca967",
+        "clab-node-group": "",
+        "clab-node-kind": "linux",
+        "clab-node-lab-dir": "/home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/clab-dc1/server21",
+        "clab-node-name": "server21",
+        "clab-node-type": "",
+        "clab-topo-file": "/home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/dc1.clab.yml",
+        "containerlab": "dc1"
+      },
+      "port-bindings": [
+        {
+          "host-ip": "",
+          "host-port": 0,
+          "port": 443,
+          "protocol": "tcp"
+        },
+        {
+          "host-ip": "",
+          "host-port": 0,
+          "port": 80,
+          "protocol": "tcp"
+        }
+      ]
+    },
+    "server22": {
+      "index": "8",
+      "shortname": "server22",
+      "longname": "clab-dc1-server22",
+      "fqdn": "server22.dc1.io",
+      "group": "",
+      "labdir": "/home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/clab-dc1/server22",
+      "kind": "linux",
+      "image": "ghcr.io/hellt/network-multitool",
+      "mgmt-net": "",
+      "mgmt-intf": "",
+      "mgmt-ipv4-address": "172.20.20.19",
+      "mgmt-ipv4-prefix-length": 24,
+      "mgmt-ipv6-address": "2001:172:20:20::13",
+      "mgmt-ipv6-prefix-length": 64,
+      "mac-address": "",
+      "labels": {
+        "clab-mgmt-net-bridge": "br-2ad09c0ca967",
+        "clab-node-group": "",
+        "clab-node-kind": "linux",
+        "clab-node-lab-dir": "/home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/clab-dc1/server22",
+        "clab-node-name": "server22",
+        "clab-node-type": "",
+        "clab-topo-file": "/home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/dc1.clab.yml",
+        "containerlab": "dc1"
+      },
+      "port-bindings": [
+        {
+          "host-ip": "",
+          "host-port": 0,
+          "port": 443,
+          "protocol": "tcp"
+        },
+        {
+          "host-ip": "",
+          "host-port": 0,
+          "port": 80,
+          "protocol": "tcp"
+        }
+      ]
+    },
+    "server23": {
+      "index": "9",
+      "shortname": "server23",
+      "longname": "clab-dc1-server23",
+      "fqdn": "server23.dc1.io",
+      "group": "",
+      "labdir": "/home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/clab-dc1/server23",
+      "kind": "linux",
+      "image": "ghcr.io/hellt/network-multitool",
+      "mgmt-net": "",
+      "mgmt-intf": "",
+      "mgmt-ipv4-address": "172.20.20.21",
+      "mgmt-ipv4-prefix-length": 24,
+      "mgmt-ipv6-address": "2001:172:20:20::15",
+      "mgmt-ipv6-prefix-length": 64,
+      "mac-address": "",
+      "labels": {
+        "clab-mgmt-net-bridge": "br-2ad09c0ca967",
+        "clab-node-group": "",
+        "clab-node-kind": "linux",
+        "clab-node-lab-dir": "/home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/clab-dc1/server23",
+        "clab-node-name": "server23",
+        "clab-node-type": "",
+        "clab-topo-file": "/home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/dc1.clab.yml",
+        "containerlab": "dc1"
+      },
+      "port-bindings": [
+        {
+          "host-ip": "",
+          "host-port": 0,
+          "port": 443,
+          "protocol": "tcp"
+        },
+        {
+          "host-ip": "",
+          "host-port": 0,
+          "port": 80,
+          "protocol": "tcp"
+        }
+      ]
+    },
+    "spine1": {
+      "index": "10",
+      "shortname": "spine1",
+      "longname": "clab-dc1-spine1",
+      "fqdn": "spine1.dc1.io",
+      "group": "",
+      "labdir": "/home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/clab-dc1/spine1",
+      "kind": "srl",
+      "image": "ghcr.io/nokia/srlinux",
+      "mgmt-net": "",
+      "mgmt-intf": "",
+      "mgmt-ipv4-address": "172.20.20.14",
+      "mgmt-ipv4-prefix-length": 24,
+      "mgmt-ipv6-address": "2001:172:20:20::e",
+      "mgmt-ipv6-prefix-length": 64,
+      "mac-address": "",
+      "labels": {
+        "clab-mgmt-net-bridge": "br-2ad09c0ca967",
+        "clab-node-group": "",
+        "clab-node-kind": "srl",
+        "clab-node-lab-dir": "/home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/clab-dc1/spine1",
+        "clab-node-name": "spine1",
+        "clab-node-type": "ixrd3",
+        "clab-topo-file": "/home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/dc1.clab.yml",
+        "containerlab": "dc1"
+      },
+      "port-bindings": [
+      ]
+    },
+    "spine2": {
+      "index": "11",
+      "shortname": "spine2",
+      "longname": "clab-dc1-spine2",
+      "fqdn": "spine2.dc1.io",
+      "group": "",
+      "labdir": "/home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/clab-dc1/spine2",
+      "kind": "srl",
+      "image": "ghcr.io/nokia/srlinux",
+      "mgmt-net": "",
+      "mgmt-intf": "",
+      "mgmt-ipv4-address": "172.20.20.22",
+      "mgmt-ipv4-prefix-length": 24,
+      "mgmt-ipv6-address": "2001:172:20:20::16",
+      "mgmt-ipv6-prefix-length": 64,
+      "mac-address": "",
+      "labels": {
+        "clab-mgmt-net-bridge": "br-2ad09c0ca967",
+        "clab-node-group": "",
+        "clab-node-kind": "srl",
+        "clab-node-lab-dir": "/home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/clab-dc1/spine2",
+        "clab-node-name": "spine2",
+        "clab-node-type": "ixrd3",
+        "clab-topo-file": "/home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/dc1.clab.yml",
+        "containerlab": "dc1"
+      },
+      "port-bindings": [
+      ]
+    }
+  },
+  "links": [
+    {
+      "a": {
+        "node": "leaf1",
+        "interface": "e1-49",
+        "mac": "aa:c1:ab:1c:1d:3e",
+        "peer": "z"
+      },
+      "z": {
+        "node": "spine1",
+        "interface": "e1-1",
+        "mac": "aa:c1:ab:c2:5f:ae",
+        "peer": "a"
+      }
+    },
+    {
+      "a": {
+        "node": "leaf1",
+        "interface": "e1-50",
+        "mac": "aa:c1:ab:66:32:2b",
+        "peer": "z"
+      },
+      "z": {
+        "node": "spine2",
+        "interface": "e1-1",
+        "mac": "aa:c1:ab:15:af:80",
+        "peer": "a"
+      }
+    },
+    {
+      "a": {
+        "node": "leaf2",
+        "interface": "e1-49",
+        "mac": "aa:c1:ab:22:7e:3d",
+        "peer": "z"
+      },
+      "z": {
+        "node": "spine1",
+        "interface": "e1-2",
+        "mac": "aa:c1:ab:ac:fe:23",
+        "peer": "a"
+      }
+    },
+    {
+      "a": {
+        "node": "leaf2",
+        "interface": "e1-50",
+        "mac": "aa:c1:ab:76:89:da",
+        "peer": "z"
+      },
+      "z": {
+        "node": "spine2",
+        "interface": "e1-2",
+        "mac": "aa:c1:ab:be:a6:e5",
+        "peer": "a"
+      }
+    },
+    {
+      "a": {
+        "node": "leaf3",
+        "interface": "e1-49",
+        "mac": "aa:c1:ab:01:27:a4",
+        "peer": "z"
+      },
+      "z": {
+        "node": "spine1",
+        "interface": "e1-3",
+        "mac": "aa:c1:ab:d7:fc:2c",
+        "peer": "a"
+      }
+    },
+    {
+      "a": {
+        "node": "leaf3",
+        "interface": "e1-50",
+        "mac": "aa:c1:ab:03:d4:1f",
+        "peer": "z"
+      },
+      "z": {
+        "node": "spine2",
+        "interface": "e1-3",
+        "mac": "aa:c1:ab:19:2c:fd",
+        "peer": "a"
+      }
+    },
+    {
+      "a": {
+        "node": "spine1",
+        "interface": "e1-4",
+        "mac": "aa:c1:ab:fa:c5:56",
+        "peer": "z"
+      },
+      "z": {
+        "node": "border1",
+        "interface": "e1-1",
+        "mac": "aa:c1:ab:db:06:8f",
+        "peer": "a"
+      }
+    },
+    {
+      "a": {
+        "node": "spine1",
+        "interface": "e1-5",
+        "mac": "aa:c1:ab:49:da:8d",
+        "peer": "z"
+      },
+      "z": {
+        "node": "border2",
+        "interface": "e1-1",
+        "mac": "aa:c1:ab:89:18:3b",
+        "peer": "a"
+      }
+    },
+    {
+      "a": {
+        "node": "spine2",
+        "interface": "e1-4",
+        "mac": "aa:c1:ab:14:93:82",
+        "peer": "z"
+      },
+      "z": {
+        "node": "border1",
+        "interface": "e1-2",
+        "mac": "aa:c1:ab:65:13:7a",
+        "peer": "a"
+      }
+    },
+    {
+      "a": {
+        "node": "spine2",
+        "interface": "e1-5",
+        "mac": "aa:c1:ab:67:98:64",
+        "peer": "z"
+      },
+      "z": {
+        "node": "border2",
+        "interface": "e1-2",
+        "mac": "aa:c1:ab:28:5b:3e",
+        "peer": "a"
+      }
+    },
+    {
+      "a": {
+        "node": "server11",
+        "interface": "eth1",
+        "mac": "aa:c1:ab:63:70:ff",
+        "peer": "z"
+      },
+      "z": {
+        "node": "leaf1",
+        "interface": "e1-1",
+        "mac": "aa:c1:ab:72:f6:65",
+        "peer": "a"
+      }
+    },
+    {
+      "a": {
+        "node": "server21",
+        "interface": "eth1",
+        "mac": "aa:c1:ab:9a:c5:c9",
+        "peer": "z"
+      },
+      "z": {
+        "node": "leaf1",
+        "interface": "e1-2",
+        "mac": "aa:c1:ab:62:2b:55",
+        "peer": "a"
+      }
+    },
+    {
+      "a": {
+        "node": "server22",
+        "interface": "eth1",
+        "mac": "aa:c1:ab:8a:59:08",
+        "peer": "z"
+      },
+      "z": {
+        "node": "leaf2",
+        "interface": "e1-1",
+        "mac": "aa:c1:ab:24:4c:1b",
+        "peer": "a"
+      }
+    },
+    {
+      "a": {
+        "node": "server13",
+        "interface": "eth1",
+        "mac": "aa:c1:ab:32:0f:a9",
+        "peer": "z"
+      },
+      "z": {
+        "node": "leaf3",
+        "interface": "e1-1",
+        "mac": "aa:c1:ab:f0:26:ff",
+        "peer": "a"
+      }
+    },
+    {
+      "a": {
+        "node": "server23",
+        "interface": "eth1",
+        "mac": "aa:c1:ab:84:5b:fe",
+        "peer": "z"
+      },
+      "z": {
+        "node": "leaf3",
+        "interface": "e1-2",
+        "mac": "aa:c1:ab:8b:58:57",
+        "peer": "a"
+      }
+    }
+  ]
+}
