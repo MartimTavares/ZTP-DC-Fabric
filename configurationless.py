@@ -212,9 +212,8 @@ def delete_ibgp(sys_ip, gnmiclient):
                     'admin-state' : 'disable'
                 }]
             }
-    update = [ ('/network-instance[name=default]/protocols/bgp', delete) ]
+    update = [ ('network-instance[name=default]/protocols/bgp', delete) ]
     result = gnmiclient.set(replace=update, encoding="json_ietf")
-    #logging.info('[gNMIc] :: ' + f'{result}')
     for conf in result['response']:
         if str(conf['path']) == '/network-instance[name=default]/protocols/bgp':
             logging.info('[OVERLAY] :: Removed all iBGP configurations')
@@ -347,7 +346,7 @@ def handle_RouteNotification(notification: Notification, state, gnmiclient) -> N
                             if neighbors[nei] == str_list_ips[l]:
                                 node_neighbors.append(l)
                     g.append(node_neighbors)
-        logging.info(f"[IS-IS] :: Updated information regarding each node in the IS-IS topology:\n{nodes_str}")
+        logging.info(f"[IS-IS] :: {datetime.datetime.now()} Updated information on the IS-IS topology:\n{nodes_str}")
 
         ## - Run the Roles Algorithm: g = [ [0,0], [one node], [needs one more node] ]
         leaves, spines, super_spines, border = [], [], [], []
@@ -408,10 +407,9 @@ def handle_RouteNotification(notification: Notification, state, gnmiclient) -> N
 
                 ## - Set up the overlay infrastructure
                 if state.sys_ip in elected_rr or state.sys_ip in leaves:
-                    if state.ibgp == False:
-                        state.ibgp = True
-                    else:
+                    if state.ibgp == True:
                         delete_ibgp(state.sys_ip, gnmiclient)
+                        state.ibgp = False
                     overlay = {
                                 'admin-state' : 'enable',
                                 'autonomous-system' : f'{IBGP_ASN}',
@@ -446,7 +444,7 @@ def handle_RouteNotification(notification: Notification, state, gnmiclient) -> N
                                 }]
                             }
                     if state.sys_ip in leaves:
-                        for l in range(RR_NUMBER-1):
+                        for l in range(RR_NUMBER):
                             if 'neighbor' not in overlay:
                                 overlay['neighbor'] = [ {
                                     'peer-address' : f'{elected_rr[l]}',
@@ -464,7 +462,8 @@ def handle_RouteNotification(notification: Notification, state, gnmiclient) -> N
                             if overlay['group'][group]['group-name'] == 'overlay':
                                 overlay['group'][group]['route-reflector'] = {
                                     'client' : 'true',
-                                    'cluster-id' : f'{state.sys_ip}'
+                                    #'cluster-id' : f'{state.sys_ip}'
+                                    'cluster-id' : f'{str(elected_rr[0])}' #Cluster-id is the same for both RRs
                                 }
                         for l in range(len(leaves)):
                             if 'neighbor' not in overlay:
@@ -481,17 +480,22 @@ def handle_RouteNotification(notification: Notification, state, gnmiclient) -> N
                                 })
 
                     update = [ ('/network-instance[name=default]/protocols/bgp', overlay) ]
-                    result = gnmiclient.set(update=update, encoding="json_ietf")
+                    while True:
+                        try:
+                            result = gnmiclient.set(update=update, encoding="json_ietf")
+                            break
+                        except Exception as X:
+                            logging.info(f'[ERROR] :: iBGP was not configured. Agent will try again.')
                     for conf in result['response']:
-                        if str(conf['path']) == '/network-instance[name=default]/protocols/bgp':
-                            logging.info('[OVERLAY] :: iBGP initialized with ASN ' + f'{IBGP_ASN}')
+                        if str(conf['path']) == 'network-instance[name=default]/protocols/bgp':
+                            logging.info(f'[OVERLAY] :: {datetime.datetime.now()} iBGP initialized with ASN ' + f'{IBGP_ASN}')
+                            state.ibgp = True
                 else:
                     ## - Delete any bgp configuration: If no longer is a leaf or a RR.
                     if state.sys_ip in state.leaves or state.sys_ip in state.route_reflectors:
-                        if state.ibgp == False:
-                            state.ibgp = True
-                        else:
+                        if state.ibgp == True:
                             delete_ibgp(state.sys_ip, gnmiclient)
+                            state.ibgp = False
 
                 ## - Update the role of each node
                 state.route_reflectors = elected_rr
@@ -499,6 +503,10 @@ def handle_RouteNotification(notification: Notification, state, gnmiclient) -> N
                 state.spines = spines
                 state.super_pines = super_spines
                 state.borders = border
+        else:
+            if state.ibgp == True:
+                delete_ibgp(state.sys_ip, gnmiclient)
+                state.ibgp = False
 
 
 def handle_LldpNeighborNotification(notification: Notification, state, gnmiclient) -> None:

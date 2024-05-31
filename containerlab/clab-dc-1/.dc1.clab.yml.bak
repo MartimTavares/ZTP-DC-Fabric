@@ -63,6 +63,42 @@ topology:
       exec:
         - chmod +r /etc/opt/srlinux/appmgr/user_agents/
         - chmod +x /usr/local/bin/configurationless.sh
+    leaf4:
+      kind: srl
+      type: ixrd2
+      binds:
+        ## - Executable File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
+        ## - YANG Models:
+        #- /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
+        ## - Configuration File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
+        ## - Python Script:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.py:/etc/opt/srlinux/appmgr/user_agents/configurationless.py:rw
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/nodesRolesAlgorithm.py:/etc/opt/srlinux/appmgr/user_agents/algorithms/nodesRolesAlgorithm.py:rw
+        ## - Input file to originate CA
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/clab-dc1/.tls/ca/ca.pem:/ca.pem:rw
+      exec:
+        - chmod +r /etc/opt/srlinux/appmgr/user_agents/
+        - chmod +x /usr/local/bin/configurationless.sh
+    leaf5:
+      kind: srl
+      type: ixrd2
+      binds:
+        ## - Executable File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
+        ## - YANG Models:
+        #- /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
+        ## - Configuration File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
+        ## - Python Script:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.py:/etc/opt/srlinux/appmgr/user_agents/configurationless.py:rw
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/nodesRolesAlgorithm.py:/etc/opt/srlinux/appmgr/user_agents/algorithms/nodesRolesAlgorithm.py:rw
+        ## - Input file to originate CA
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/clab-dc1/.tls/ca/ca.pem:/ca.pem:rw
+      exec:
+        - chmod +r /etc/opt/srlinux/appmgr/user_agents/
+        - chmod +x /usr/local/bin/configurationless.sh
     spine1:
       kind: srl
       type: ixrd3
@@ -82,6 +118,24 @@ topology:
         - chmod +r /etc/opt/srlinux/appmgr/user_agents/
         - chmod +x /usr/local/bin/configurationless.sh
     spine2:
+      kind: srl
+      type: ixrd3
+      binds:
+        ## - Executable File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
+        ## - YANG Models:
+        #- /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
+        ## - Configuration File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
+        ## - Python Script:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.py:/etc/opt/srlinux/appmgr/user_agents/configurationless.py:rw
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/nodesRolesAlgorithm.py:/etc/opt/srlinux/appmgr/user_agents/algorithms/nodesRolesAlgorithm.py:rw
+        ## - Input file to originate CA
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-1/clab-dc1/.tls/ca/ca.pem:/ca.pem:rw
+      exec:
+        - chmod +r /etc/opt/srlinux/appmgr/user_agents/
+        - chmod +x /usr/local/bin/configurationless.sh
+    spine3:
       kind: srl
       type: ixrd3
       binds:
@@ -168,20 +222,34 @@ topology:
   links:
   # inter-switch links
     # leaf1 <-> spines
-    - endpoints: ["leaf1:e1-49", "spine1:e1-1"]
-    - endpoints: ["leaf1:e1-50", "spine2:e1-1"]
+    - endpoints: ["leaf1:e1-48", "spine1:e1-1"]
+    - endpoints: ["leaf1:e1-49", "spine2:e1-1"]
+    - endpoints: ["leaf1:e1-50", "spine3:e1-1"]
     # leaf2 <-> spines
-    - endpoints: ["leaf2:e1-49", "spine1:e1-2"]
-    - endpoints: ["leaf2:e1-50", "spine2:e1-2"]
+    - endpoints: ["leaf2:e1-48", "spine1:e1-2"]
+    - endpoints: ["leaf2:e1-49", "spine2:e1-2"]
+    - endpoints: ["leaf2:e1-50", "spine3:e1-2"]
     # leaf3 <-> spines
-    - endpoints: ["leaf3:e1-49", "spine1:e1-3"]
-    - endpoints: ["leaf3:e1-50", "spine2:e1-3"]
+    - endpoints: ["leaf3:e1-48", "spine1:e1-3"]
+    - endpoints: ["leaf3:e1-49", "spine2:e1-3"]
+    - endpoints: ["leaf3:e1-50", "spine3:e1-3"]
+    # leaf4 <-> spines
+    - endpoints: ["leaf4:e1-48", "spine1:e1-4"]
+    - endpoints: ["leaf4:e1-49", "spine2:e1-4"]
+    - endpoints: ["leaf4:e1-50", "spine3:e1-4"]
+    # leaf5 <-> spines
+    - endpoints: ["leaf5:e1-48", "spine1:e1-5"]
+    - endpoints: ["leaf5:e1-49", "spine2:e1-5"]
+    - endpoints: ["leaf5:e1-50", "spine3:e1-5"]
     # spine1 <-> borders
-    - endpoints: ["spine1:e1-4", "border1:e1-1"]
-    - endpoints: ["spine1:e1-5", "border2:e1-1"]
+    - endpoints: ["spine1:e1-6", "border1:e1-1"]
+    - endpoints: ["spine1:e1-7", "border2:e1-1"]
     # spine2 <-> borders
-    - endpoints: ["spine2:e1-4", "border1:e1-2"]
-    - endpoints: ["spine2:e1-5", "border2:e1-2"]
+    - endpoints: ["spine2:e1-6", "border1:e1-2"]
+    - endpoints: ["spine2:e1-7", "border2:e1-2"]
+    # spine3 <-> borders
+    - endpoints: ["spine3:e1-6", "border1:e1-3"]
+    - endpoints: ["spine3:e1-7", "border2:e1-3"]
     # server links
     - endpoints: ["server11:eth1", "leaf1:e1-1"]
     - endpoints: ["server21:eth1", "leaf1:e1-2"]

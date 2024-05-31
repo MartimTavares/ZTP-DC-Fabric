@@ -7,7 +7,8 @@
    "failed_login_count": 0,
    "locked_out": false,
    "password_changed_after_first_login": false,
-   "password_update_time": "2024-05-23T15:00:52Z"
+   "password_update_time": "2024-05-29T14:31:40Z",
+   "last_successful_login_time": "2024-05-29T14:32:57Z"
   }
  },
  "ntp_sync": false,
