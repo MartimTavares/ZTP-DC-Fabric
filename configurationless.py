@@ -368,6 +368,7 @@ def handle_RouteNotification(notification: Notification, state, gnmiclient) -> N
 
         ## - Choose 2 Route Reflectors and configure them.
         if (len(leaves) + len(spines) + len(super_spines) + len(border)) > 2:
+            ## - Only set a new iBGP configuration if the previously known topology changed.
             if state.leaves != leaves or state.spines != spines or state.super_spines != super_spines or state.borders != border:
                 elected_rr = []
                 if len(super_spines) > 0:
@@ -480,22 +481,24 @@ def handle_RouteNotification(notification: Notification, state, gnmiclient) -> N
                                 })
 
                     update = [ ('/network-instance[name=default]/protocols/bgp', overlay) ]
-                    while True:
-                        try:
-                            result = gnmiclient.set(update=update, encoding="json_ietf")
-                            break
-                        except Exception as X:
-                            logging.info(f'[ERROR] :: iBGP was not configured. Agent will try again.')
+                    time.sleep(2) # Necessary for the testing environment hypervisor to execute the iBGP configuration with success.
+                    result = gnmiclient.set(update=update, encoding="json_ietf")
+                    #while True:
+                    #    try:
+                    #        result = gnmiclient.set(update=update, encoding="json_ietf")
+                    #        break
+                    #    except Exception as X:
+                    #        logging.info(f'[ERROR] :: iBGP was not configured. Agent will try again.')
                     for conf in result['response']:
                         if str(conf['path']) == 'network-instance[name=default]/protocols/bgp':
                             logging.info(f'[OVERLAY] :: {datetime.datetime.now()} iBGP initialized with ASN ' + f'{IBGP_ASN}')
                             state.ibgp = True
                 else:
                     ## - Delete any bgp configuration: If no longer is a leaf or a RR.
-                    if state.sys_ip in state.leaves or state.sys_ip in state.route_reflectors:
-                        if state.ibgp == True:
-                            delete_ibgp(state.sys_ip, gnmiclient)
-                            state.ibgp = False
+                    #if state.sys_ip in state.leaves or state.sys_ip in state.route_reflectors:
+                    if state.ibgp == True:
+                        delete_ibgp(state.sys_ip, gnmiclient)
+                        state.ibgp = False
 
                 ## - Update the role of each node
                 state.route_reflectors = elected_rr
@@ -579,24 +582,24 @@ def handle_LldpNeighborNotification(notification: Notification, state, gnmiclien
     elif notification.op == 2:
         for i in state.lldp_neighbors[:]:
             if i[LOCAL_INT] == neighbor[LOCAL_INT] and i[NEIGHBOR_CHASSIS] == neighbor[NEIGHBOR_CHASSIS]:
-                int_conf['admin-state'] = "disable"
-                int_conf['subinterface'][0]['admin-state'] = "disable"
-                int_conf['subinterface'][0]['ipv4']['admin-state'] = "disable"
-                int_conf['subinterface'][0]['ipv4']['unnumbered']['admin-state'] = "disable"
-                if state.underlay_protocol == 'IS-IS':
-                    routing_conf['instance'][0]['interface'][0]['admin-state'] = "disable"
+                #int_conf['admin-state'] = "disable"#!!!
+                #int_conf['subinterface'][0]['admin-state'] = "disable"
+                #int_conf['subinterface'][0]['ipv4']['admin-state'] = "disable"
+                #int_conf['subinterface'][0]['ipv4']['unnumbered']['admin-state'] = "disable"
+                routing_conf['instance'][0]['interface'][0]['admin-state'] = "disable"
                 delete_updates = [
-                    (f'/interface[name={interface_name}]', int_conf),
+                    #(f'/interface[name={interface_name}]', int_conf),
                     ('/network-instance[name=default]/protocols/isis', routing_conf)
                 ]
                 result = gnmiclient.set(update=delete_updates, encoding="json_ietf")
-                #logging.info('[gNMIc] :: ' + f'{result}')
                 for conf in result['response']:
                     if str(conf['path']) == f'interface[name={interface_name}]':
                         logging.info(f"[REMOVED NEIGHBOR] :: {i[NEIGHBOR_CHASSIS]}, {i[SYS_NAME]}, {i[NEIGHBOR_INT]}, {i[LOCAL_INT]}")
                         state.lldp_neighbors.remove(i)
+                
     ## - Notification is CHANGE (value: 1)
     else:
+        logging.info(str(notification))
         pass
         # TODO
     state.new_lldp_notification = True
