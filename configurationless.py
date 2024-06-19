@@ -16,6 +16,7 @@
 ##################################################################################################
 """
 from algorithms.nodesRolesAlgorithm import nodesRolesAlgorithm
+from algorithms.nodesRolesAlgorithm import intersect
 import grpc
 import ctypes
 import os
@@ -346,8 +347,8 @@ def handle_RouteNotification(notification: Notification, state, gnmiclient) -> N
                             if neighbors[nei] == str_list_ips[l]:
                                 node_neighbors.append(l)
                     g.append(node_neighbors)
-        logging.info(f"[IS-IS] :: {datetime.datetime.now()} Updated information on the IS-IS topology:\n{nodes_str}")
 
+        logging.info(f"[IS-IS] :: {datetime.datetime.now()} Updated information on the IS-IS topology:\n{nodes_str}..............................\nNumber of nodes: {len(list_ips)}\n")
         ## - Run the Roles Algorithm: g = [ [0,0], [one node], [needs one more node] ]
         leaves, spines, super_spines, border = [], [], [], []
         leaves_aux, spines_aux, super_spines_aux, border_aux = [], [], [], []
@@ -364,12 +365,12 @@ def handle_RouteNotification(notification: Notification, state, gnmiclient) -> N
         for e in range(len(border_aux)):
             border.append(str_list_ips[border_aux[e]])
 
-        logging.info(f"Leaves: {str(leaves)}\nSpines: {str(spines)}\nSuper-Spines:{str(super_spines)}\nBorder-Leaves:{str(border)}\n")
-
         ## - Choose 2 Route Reflectors and configure them.
         if (len(leaves) + len(spines) + len(super_spines) + len(border)) > 2:
             ## - Only set a new iBGP configuration if the previously known topology changed.
+            #if (len(intersect(state.leaves, leaves)) != len(state.leaves) or len(state.leaves) != len(leaves)) or (len(intersect(state.spines, spines)) != len(state.spines) or len(state.spines) != len(spines)) or (len(intersect(state.super_spines, super_spines)) != len(state.super_spines) or len(state.super_spines) != len(super_spines)) or (len(intersect(state.borders, border)) != len(state.borders) or len(state.super_spines) != len(border)):
             if state.leaves != leaves or state.spines != spines or state.super_spines != super_spines or state.borders != border:
+                logging.info(f"Leaves: {str(leaves)}\nSpines: {str(spines)}\nSuper-Spines:{str(super_spines)}\nBorder-Leaves:{str(border)}\n")
                 elected_rr = []
                 if len(super_spines) > 0:
                     for e in range(len(super_spines)):
@@ -504,7 +505,7 @@ def handle_RouteNotification(notification: Notification, state, gnmiclient) -> N
                 state.route_reflectors = elected_rr
                 state.leaves = leaves
                 state.spines = spines
-                state.super_pines = super_spines
+                state.super_spines = super_spines
                 state.borders = border
         else:
             if state.ibgp == True:

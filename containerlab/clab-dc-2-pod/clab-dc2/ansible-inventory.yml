@@ -5,31 +5,43 @@ all:
     # module does not attempt using any global http proxy.
     ansible_httpapi_use_proxy: false
   children:
-    linux:
-      hosts:
-        clab-dc2-server11:
-          ansible_host: 172.20.20.4
-        clab-dc2-server13:
-          ansible_host: 172.20.20.11
-        clab-dc2-server21:
-          ansible_host: 172.20.20.3
-        clab-dc2-server22:
-          ansible_host: 172.20.20.10
-        clab-dc2-server23:
-          ansible_host: 172.20.20.2
     srl:
       hosts:
-        clab-dc2-border1:
-          ansible_host: 172.20.20.6
-        clab-dc2-border2:
+        clab-dc2-node1:
+          ansible_host: 172.20.20.15
+        clab-dc2-node10:
+          ansible_host: 172.20.20.19
+        clab-dc2-node11:
           ansible_host: 172.20.20.9
-        clab-dc2-leaf1:
-          ansible_host: 172.20.20.12
-        clab-dc2-leaf2:
+        clab-dc2-node12:
+          ansible_host: 172.20.20.4
+        clab-dc2-node13:
+          ansible_host: 172.20.20.10
+        clab-dc2-node14:
           ansible_host: 172.20.20.7
-        clab-dc2-leaf3:
-          ansible_host: 172.20.20.13
-        clab-dc2-spine1:
-          ansible_host: 172.20.20.5
-        clab-dc2-spine2:
+        clab-dc2-node15:
+          ansible_host: 172.20.20.6
+        clab-dc2-node16:
+          ansible_host: 172.20.20.14
+        clab-dc2-node17:
+          ansible_host: 172.20.20.20
+        clab-dc2-node18:
+          ansible_host: 172.20.20.3
+        clab-dc2-node19:
           ansible_host: 172.20.20.8
+        clab-dc2-node2:
+          ansible_host: 172.20.20.16
+        clab-dc2-node3:
+          ansible_host: 172.20.20.5
+        clab-dc2-node4:
+          ansible_host: 172.20.20.2
+        clab-dc2-node5:
+          ansible_host: 172.20.20.17
+        clab-dc2-node6:
+          ansible_host: 172.20.20.18
+        clab-dc2-node7:
+          ansible_host: 172.20.20.13
+        clab-dc2-node8:
+          ansible_host: 172.20.20.11
+        clab-dc2-node9:
+          ansible_host: 172.20.20.12

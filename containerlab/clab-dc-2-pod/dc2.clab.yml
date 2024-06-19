@@ -7,7 +7,7 @@ topology:
     linux:
       image: ghcr.io/hellt/network-multitool
   nodes:
-    leaf1:
+    node1:
       kind: srl
       type: ixrd2
       # leaf configurations, e.g: set / interface ethernet-1/49 subinterface 0 ipv4 address 192.168.11.1/30
@@ -23,13 +23,15 @@ topology:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.py:/etc/opt/srlinux/appmgr/user_agents/configurationless.py:rw
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/nodesRolesAlgorithm.py:/etc/opt/srlinux/appmgr/user_agents/algorithms/nodesRolesAlgorithm.py:rw
         ## - Input file to originate CA
-        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-2/clab-dc2/.tls/ca/ca.pem:/ca.pem:rw
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-2-pod/clab-dc2/.tls/ca/ca.pem:/ca.pem:rw
       exec:
         - chmod +r /etc/opt/srlinux/appmgr/user_agents/
         - chmod +x /usr/local/bin/configurationless.sh
-    leaf2:
+    node2:
       kind: srl
       type: ixrd2
+      # leaf configurations, e.g: set / interface ethernet-1/49 subinterface 0 ipv4 address 192.168.11.1/30
+      #startup-config: configs/leaf1.cfg
       binds:
         ## - Executable File:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
@@ -41,13 +43,15 @@ topology:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.py:/etc/opt/srlinux/appmgr/user_agents/configurationless.py:rw
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/nodesRolesAlgorithm.py:/etc/opt/srlinux/appmgr/user_agents/algorithms/nodesRolesAlgorithm.py:rw
         ## - Input file to originate CA
-        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-2/clab-dc2/.tls/ca/ca.pem:/ca.pem:rw
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-2-pod/clab-dc2/.tls/ca/ca.pem:/ca.pem:rw
       exec:
         - chmod +r /etc/opt/srlinux/appmgr/user_agents/
         - chmod +x /usr/local/bin/configurationless.sh
-    leaf3:
+    node3:
       kind: srl
       type: ixrd2
+      # leaf configurations, e.g: set / interface ethernet-1/49 subinterface 0 ipv4 address 192.168.11.1/30
+      #startup-config: configs/leaf1.cfg
       binds:
         ## - Executable File:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
@@ -59,13 +63,15 @@ topology:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.py:/etc/opt/srlinux/appmgr/user_agents/configurationless.py:rw
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/nodesRolesAlgorithm.py:/etc/opt/srlinux/appmgr/user_agents/algorithms/nodesRolesAlgorithm.py:rw
         ## - Input file to originate CA
-        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-2/clab-dc2/.tls/ca/ca.pem:/ca.pem:rw
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-2-pod/clab-dc2/.tls/ca/ca.pem:/ca.pem:rw
       exec:
         - chmod +r /etc/opt/srlinux/appmgr/user_agents/
         - chmod +x /usr/local/bin/configurationless.sh
-    spine1:
+    node4:
       kind: srl
-      type: ixrd3
+      type: ixrd2
+      # leaf configurations, e.g: set / interface ethernet-1/49 subinterface 0 ipv4 address 192.168.11.1/30
+      #startup-config: configs/leaf1.cfg
       binds:
         ## - Executable File:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
@@ -77,13 +83,15 @@ topology:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.py:/etc/opt/srlinux/appmgr/user_agents/configurationless.py:rw
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/nodesRolesAlgorithm.py:/etc/opt/srlinux/appmgr/user_agents/algorithms/nodesRolesAlgorithm.py:rw
         ## - Input file to originate CA
-        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-2/clab-dc2/.tls/ca/ca.pem:/ca.pem:rw
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-2-pod/clab-dc2/.tls/ca/ca.pem:/ca.pem:rw
       exec:
         - chmod +r /etc/opt/srlinux/appmgr/user_agents/
         - chmod +x /usr/local/bin/configurationless.sh
-    spine2:
+    node5:
       kind: srl
-      type: ixrd3
+      type: ixrd2
+      # leaf configurations, e.g: set / interface ethernet-1/49 subinterface 0 ipv4 address 192.168.11.1/30
+      #startup-config: configs/leaf1.cfg
       binds:
         ## - Executable File:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
@@ -95,13 +103,15 @@ topology:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.py:/etc/opt/srlinux/appmgr/user_agents/configurationless.py:rw
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/nodesRolesAlgorithm.py:/etc/opt/srlinux/appmgr/user_agents/algorithms/nodesRolesAlgorithm.py:rw
         ## - Input file to originate CA
-        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-2/clab-dc2/.tls/ca/ca.pem:/ca.pem:rw
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-2-pod/clab-dc2/.tls/ca/ca.pem:/ca.pem:rw
       exec:
         - chmod +r /etc/opt/srlinux/appmgr/user_agents/
         - chmod +x /usr/local/bin/configurationless.sh
-    border1:
+    node6:
       kind: srl
-      type: ixrd3
+      type: ixrd2
+      # leaf configurations, e.g: set / interface ethernet-1/49 subinterface 0 ipv4 address 192.168.11.1/30
+      #startup-config: configs/leaf1.cfg
       binds:
         ## - Executable File:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
@@ -113,13 +123,15 @@ topology:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.py:/etc/opt/srlinux/appmgr/user_agents/configurationless.py:rw
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/nodesRolesAlgorithm.py:/etc/opt/srlinux/appmgr/user_agents/algorithms/nodesRolesAlgorithm.py:rw
         ## - Input file to originate CA
-        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-2/clab-dc2/.tls/ca/ca.pem:/ca.pem:rw
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-2-pod/clab-dc2/.tls/ca/ca.pem:/ca.pem:rw
       exec:
         - chmod +r /etc/opt/srlinux/appmgr/user_agents/
         - chmod +x /usr/local/bin/configurationless.sh
-    border2:
+    node7:
       kind: srl
-      type: ixrd3
+      type: ixrd2
+      # leaf configurations, e.g: set / interface ethernet-1/49 subinterface 0 ipv4 address 192.168.11.1/30
+      #startup-config: configs/leaf1.cfg
       binds:
         ## - Executable File:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
@@ -131,60 +143,308 @@ topology:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.py:/etc/opt/srlinux/appmgr/user_agents/configurationless.py:rw
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/nodesRolesAlgorithm.py:/etc/opt/srlinux/appmgr/user_agents/algorithms/nodesRolesAlgorithm.py:rw
         ## - Input file to originate CA
-        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-2/clab-dc2/.tls/ca/ca.pem:/ca.pem:rw
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-2-pod/clab-dc2/.tls/ca/ca.pem:/ca.pem:rw
       exec:
         - chmod +r /etc/opt/srlinux/appmgr/user_agents/
         - chmod +x /usr/local/bin/configurationless.sh
-    server11:
-      kind: linux
+    node8:
+      kind: srl
+      type: ixrd2
+      # leaf configurations, e.g: set / interface ethernet-1/49 subinterface 0 ipv4 address 192.168.11.1/30
+      #startup-config: configs/leaf1.cfg
+      binds:
+        ## - Executable File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
+        ## - YANG Models:
+        #- /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
+        ## - Configuration File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
+        ## - Python Script:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.py:/etc/opt/srlinux/appmgr/user_agents/configurationless.py:rw
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/nodesRolesAlgorithm.py:/etc/opt/srlinux/appmgr/user_agents/algorithms/nodesRolesAlgorithm.py:rw
+        ## - Input file to originate CA
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-2-pod/clab-dc2/.tls/ca/ca.pem:/ca.pem:rw
       exec:
-        - ip link set address 00:c1:ab:11:00:11 dev eth1
-        - ip addr add 192.168.0.1/24 dev eth1
-        - sysctl -w net.ipv6.conf.all.disable_ipv6=1
-    server21:
-      kind: linux
+        - chmod +r /etc/opt/srlinux/appmgr/user_agents/
+        - chmod +x /usr/local/bin/configurationless.sh
+    node9:
+      kind: srl
+      type: ixrd2
+      # leaf configurations, e.g: set / interface ethernet-1/49 subinterface 0 ipv4 address 192.168.11.1/30
+      #startup-config: configs/leaf1.cfg
+      binds:
+        ## - Executable File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
+        ## - YANG Models:
+        #- /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
+        ## - Configuration File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
+        ## - Python Script:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.py:/etc/opt/srlinux/appmgr/user_agents/configurationless.py:rw
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/nodesRolesAlgorithm.py:/etc/opt/srlinux/appmgr/user_agents/algorithms/nodesRolesAlgorithm.py:rw
+        ## - Input file to originate CA
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-2-pod/clab-dc2/.tls/ca/ca.pem:/ca.pem:rw
       exec:
-        - ip link set address 00:c1:ab:11:00:21 dev eth1
-        - ip addr add 192.168.0.1/24 dev eth1
-        - sysctl -w net.ipv6.conf.all.disable_ipv6=1
-    server22:
-      kind: linux
+        - chmod +r /etc/opt/srlinux/appmgr/user_agents/
+        - chmod +x /usr/local/bin/configurationless.sh
+    node10:
+      kind: srl
+      type: ixrd2
+      # leaf configurations, e.g: set / interface ethernet-1/49 subinterface 0 ipv4 address 192.168.11.1/30
+      #startup-config: configs/leaf1.cfg
+      binds:
+        ## - Executable File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
+        ## - YANG Models:
+        #- /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
+        ## - Configuration File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
+        ## - Python Script:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.py:/etc/opt/srlinux/appmgr/user_agents/configurationless.py:rw
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/nodesRolesAlgorithm.py:/etc/opt/srlinux/appmgr/user_agents/algorithms/nodesRolesAlgorithm.py:rw
+        ## - Input file to originate CA
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-2-pod/clab-dc2/.tls/ca/ca.pem:/ca.pem:rw
       exec:
-        - ip link set address 00:c1:ab:11:00:22 dev eth1
-        - ip addr add 192.168.0.2/24 dev eth1
-        - sysctl -w net.ipv6.conf.all.disable_ipv6=1
-    server13:
-      kind: linux
+        - chmod +r /etc/opt/srlinux/appmgr/user_agents/
+        - chmod +x /usr/local/bin/configurationless.sh
+    node11:
+      kind: srl
+      type: ixrd2
+      # leaf configurations, e.g: set / interface ethernet-1/49 subinterface 0 ipv4 address 192.168.11.1/30
+      #startup-config: configs/leaf1.cfg
+      binds:
+        ## - Executable File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
+        ## - YANG Models:
+        #- /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
+        ## - Configuration File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
+        ## - Python Script:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.py:/etc/opt/srlinux/appmgr/user_agents/configurationless.py:rw
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/nodesRolesAlgorithm.py:/etc/opt/srlinux/appmgr/user_agents/algorithms/nodesRolesAlgorithm.py:rw
+        ## - Input file to originate CA
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-2-pod/clab-dc2/.tls/ca/ca.pem:/ca.pem:rw
       exec:
-        - ip link set address 00:c1:ab:11:00:13 dev eth1
-        - ip addr add 192.168.0.3/24 dev eth1
-        - sysctl -w net.ipv6.conf.all.disable_ipv6=1
-    server23:
-      kind: linux
+        - chmod +r /etc/opt/srlinux/appmgr/user_agents/
+        - chmod +x /usr/local/bin/configurationless.sh
+    node12:
+      kind: srl
+      type: ixrd2
+      # leaf configurations, e.g: set / interface ethernet-1/49 subinterface 0 ipv4 address 192.168.11.1/30
+      #startup-config: configs/leaf1.cfg
+      binds:
+        ## - Executable File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
+        ## - YANG Models:
+        #- /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
+        ## - Configuration File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
+        ## - Python Script:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.py:/etc/opt/srlinux/appmgr/user_agents/configurationless.py:rw
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/nodesRolesAlgorithm.py:/etc/opt/srlinux/appmgr/user_agents/algorithms/nodesRolesAlgorithm.py:rw
+        ## - Input file to originate CA
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-2-pod/clab-dc2/.tls/ca/ca.pem:/ca.pem:rw
       exec:
-        - ip link set address 00:c1:ab:11:00:23 dev eth1
-        - ip addr add 192.168.0.3/24 dev eth1
-        - sysctl -w net.ipv6.conf.all.disable_ipv6=1
+        - chmod +r /etc/opt/srlinux/appmgr/user_agents/
+        - chmod +x /usr/local/bin/configurationless.sh
+    node13:
+      kind: srl
+      type: ixrd2
+      # leaf configurations, e.g: set / interface ethernet-1/49 subinterface 0 ipv4 address 192.168.11.1/30
+      #startup-config: configs/leaf1.cfg
+      binds:
+        ## - Executable File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
+        ## - YANG Models:
+        #- /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
+        ## - Configuration File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
+        ## - Python Script:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.py:/etc/opt/srlinux/appmgr/user_agents/configurationless.py:rw
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/nodesRolesAlgorithm.py:/etc/opt/srlinux/appmgr/user_agents/algorithms/nodesRolesAlgorithm.py:rw
+        ## - Input file to originate CA
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-2-pod/clab-dc2/.tls/ca/ca.pem:/ca.pem:rw
+      exec:
+        - chmod +r /etc/opt/srlinux/appmgr/user_agents/
+        - chmod +x /usr/local/bin/configurationless.sh
+    node14:
+      kind: srl
+      type: ixrd2
+      # leaf configurations, e.g: set / interface ethernet-1/49 subinterface 0 ipv4 address 192.168.11.1/30
+      #startup-config: configs/leaf1.cfg
+      binds:
+        ## - Executable File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
+        ## - YANG Models:
+        #- /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
+        ## - Configuration File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
+        ## - Python Script:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.py:/etc/opt/srlinux/appmgr/user_agents/configurationless.py:rw
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/nodesRolesAlgorithm.py:/etc/opt/srlinux/appmgr/user_agents/algorithms/nodesRolesAlgorithm.py:rw
+        ## - Input file to originate CA
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-2-pod/clab-dc2/.tls/ca/ca.pem:/ca.pem:rw
+      exec:
+        - chmod +r /etc/opt/srlinux/appmgr/user_agents/
+        - chmod +x /usr/local/bin/configurationless.sh
+    node15:
+      kind: srl
+      type: ixrd2
+      # leaf configurations, e.g: set / interface ethernet-1/49 subinterface 0 ipv4 address 192.168.11.1/30
+      #startup-config: configs/leaf1.cfg
+      binds:
+        ## - Executable File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
+        ## - YANG Models:
+        #- /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
+        ## - Configuration File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
+        ## - Python Script:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.py:/etc/opt/srlinux/appmgr/user_agents/configurationless.py:rw
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/nodesRolesAlgorithm.py:/etc/opt/srlinux/appmgr/user_agents/algorithms/nodesRolesAlgorithm.py:rw
+        ## - Input file to originate CA
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-2-pod/clab-dc2/.tls/ca/ca.pem:/ca.pem:rw
+      exec:
+        - chmod +r /etc/opt/srlinux/appmgr/user_agents/
+        - chmod +x /usr/local/bin/configurationless.sh
+    node16:
+      kind: srl
+      type: ixrd2
+      # leaf configurations, e.g: set / interface ethernet-1/49 subinterface 0 ipv4 address 192.168.11.1/30
+      #startup-config: configs/leaf1.cfg
+      binds:
+        ## - Executable File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
+        ## - YANG Models:
+        #- /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
+        ## - Configuration File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
+        ## - Python Script:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.py:/etc/opt/srlinux/appmgr/user_agents/configurationless.py:rw
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/nodesRolesAlgorithm.py:/etc/opt/srlinux/appmgr/user_agents/algorithms/nodesRolesAlgorithm.py:rw
+        ## - Input file to originate CA
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-2-pod/clab-dc2/.tls/ca/ca.pem:/ca.pem:rw
+      exec:
+        - chmod +r /etc/opt/srlinux/appmgr/user_agents/
+        - chmod +x /usr/local/bin/configurationless.sh
+    node17:
+      kind: srl
+      type: ixrd2
+      # leaf configurations, e.g: set / interface ethernet-1/49 subinterface 0 ipv4 address 192.168.11.1/30
+      #startup-config: configs/leaf1.cfg
+      binds:
+        ## - Executable File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
+        ## - YANG Models:
+        #- /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
+        ## - Configuration File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
+        ## - Python Script:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.py:/etc/opt/srlinux/appmgr/user_agents/configurationless.py:rw
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/nodesRolesAlgorithm.py:/etc/opt/srlinux/appmgr/user_agents/algorithms/nodesRolesAlgorithm.py:rw
+        ## - Input file to originate CA
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-2-pod/clab-dc2/.tls/ca/ca.pem:/ca.pem:rw
+      exec:
+        - chmod +r /etc/opt/srlinux/appmgr/user_agents/
+        - chmod +x /usr/local/bin/configurationless.sh
+    node18:
+      kind: srl
+      type: ixrd2
+      # leaf configurations, e.g: set / interface ethernet-1/49 subinterface 0 ipv4 address 192.168.11.1/30
+      #startup-config: configs/leaf1.cfg
+      binds:
+        ## - Executable File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
+        ## - YANG Models:
+        #- /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
+        ## - Configuration File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
+        ## - Python Script:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.py:/etc/opt/srlinux/appmgr/user_agents/configurationless.py:rw
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/nodesRolesAlgorithm.py:/etc/opt/srlinux/appmgr/user_agents/algorithms/nodesRolesAlgorithm.py:rw
+        ## - Input file to originate CA
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-2-pod/clab-dc2/.tls/ca/ca.pem:/ca.pem:rw
+      exec:
+        - chmod +r /etc/opt/srlinux/appmgr/user_agents/
+        - chmod +x /usr/local/bin/configurationless.sh
+    node19:
+      kind: srl
+      type: ixrd2
+      # leaf configurations, e.g: set / interface ethernet-1/49 subinterface 0 ipv4 address 192.168.11.1/30
+      #startup-config: configs/leaf1.cfg
+      binds:
+        ## - Executable File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
+        ## - YANG Models:
+        #- /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
+        ## - Configuration File:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
+        ## - Python Script:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.py:/etc/opt/srlinux/appmgr/user_agents/configurationless.py:rw
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/nodesRolesAlgorithm.py:/etc/opt/srlinux/appmgr/user_agents/algorithms/nodesRolesAlgorithm.py:rw
+        ## - Input file to originate CA
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/containerlab/clab-dc-2-pod/clab-dc2/.tls/ca/ca.pem:/ca.pem:rw
+      exec:
+        - chmod +r /etc/opt/srlinux/appmgr/user_agents/
+        - chmod +x /usr/local/bin/configurationless.sh
+
+
   links:
   # inter-switch links
-    # leaf1 <-> spines
-    - endpoints: ["leaf1:e1-48", "spine1:e1-1"]
-    - endpoints: ["leaf1:e1-49", "spine2:e1-1"]
-    # leaf2 <-> spines
-    - endpoints: ["leaf2:e1-48", "spine1:e1-2"]
-    - endpoints: ["leaf2:e1-49", "spine2:e1-2"]
-    # leaf3 <-> spines
-    - endpoints: ["leaf3:e1-48", "spine1:e1-3"]
-    - endpoints: ["leaf3:e1-49", "spine2:e1-3"]
-    # spine1 <-> borders
-    - endpoints: ["spine1:e1-6", "border1:e1-1"]
-    - endpoints: ["spine1:e1-7", "border2:e1-1"]
-    # spine2 <-> borders
-    - endpoints: ["spine2:e1-6", "border1:e1-2"]
-    - endpoints: ["spine2:e1-7", "border2:e1-2"]
-    # server links
-    - endpoints: ["server11:eth1", "leaf1:e1-1"]
-    - endpoints: ["server21:eth1", "leaf1:e1-2"]
-    - endpoints: ["server22:eth1", "leaf2:e1-1"]
-    - endpoints: ["server13:eth1", "leaf3:e1-1"]
-    - endpoints: ["server23:eth1", "leaf3:e1-2"]
+    # Pod 1
+    - endpoints: ["node1:e1-1", "node6:e1-1"]
+    - endpoints: ["node1:e1-2", "node7:e1-1"]
+    - endpoints: ["node1:e1-3", "node8:e1-1"]
+
+    - endpoints: ["node2:e1-1", "node6:e1-2"]
+    - endpoints: ["node2:e1-2", "node7:e1-2"]
+    - endpoints: ["node2:e1-3", "node8:e1-2"]
+
+    - endpoints: ["node3:e1-1", "node6:e1-3"]
+    - endpoints: ["node3:e1-2", "node7:e1-3"]
+    - endpoints: ["node3:e1-3", "node8:e1-3"]
+
+    - endpoints: ["node4:e1-1", "node6:e1-4"]
+    - endpoints: ["node4:e1-2", "node7:e1-4"]
+    - endpoints: ["node4:e1-3", "node8:e1-4"]
+
+    - endpoints: ["node5:e1-1", "node6:e1-5"]
+    - endpoints: ["node5:e1-2", "node7:e1-5"]
+    - endpoints: ["node5:e1-3", "node8:e1-5"]
+
+    - endpoints: ["node9:e1-1", "node13:e1-1"]
+    - endpoints: ["node9:e1-2", "node14:e1-1"]
+
+    - endpoints: ["node10:e1-1", "node13:e1-2"]
+    - endpoints: ["node10:e1-2", "node14:e1-2"]
+
+    - endpoints: ["node11:e1-1", "node13:e1-3"]
+    - endpoints: ["node11:e1-2", "node14:e1-3"]
+
+    - endpoints: ["node12:e1-1", "node13:e1-4"]
+    - endpoints: ["node12:e1-2", "node14:e1-4"]
+
+    - endpoints: ["node15:e1-1", "node6:e1-6"]
+    - endpoints: ["node15:e1-2", "node7:e1-6"]
+    - endpoints: ["node15:e1-3", "node8:e1-6"]
+    - endpoints: ["node15:e1-4", "node13:e1-5"]
+    - endpoints: ["node15:e1-5", "node14:e1-5"]
+    - endpoints: ["node15:e1-6", "node18:e1-1"]
+    - endpoints: ["node15:e1-7", "node19:e1-1"]
+
+    - endpoints: ["node16:e1-1", "node6:e1-7"]
+    - endpoints: ["node16:e1-2", "node7:e1-7"]
+    - endpoints: ["node16:e1-3", "node8:e1-7"]
+    - endpoints: ["node16:e1-4", "node13:e1-6"]
+    - endpoints: ["node16:e1-5", "node14:e1-6"]
+    - endpoints: ["node16:e1-6", "node18:e1-2"]
+    - endpoints: ["node16:e1-7", "node19:e1-2"]
+
+    - endpoints: ["node17:e1-1", "node6:e1-8"]
+    - endpoints: ["node17:e1-2", "node7:e1-8"]
+    - endpoints: ["node17:e1-3", "node8:e1-8"]
+    - endpoints: ["node17:e1-4", "node13:e1-7"]
+    - endpoints: ["node17:e1-5", "node14:e1-7"]
+    - endpoints: ["node17:e1-6", "node18:e1-3"]
+    - endpoints: ["node17:e1-7", "node19:e1-3"]
+

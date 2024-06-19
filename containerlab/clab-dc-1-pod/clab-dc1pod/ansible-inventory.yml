@@ -8,22 +8,22 @@ all:
     srl:
       hosts:
         clab-dc1pod-border1:
-          ansible_host: 172.20.20.7
+          ansible_host: 172.20.20.4
         clab-dc1pod-border2:
           ansible_host: 172.20.20.6
         clab-dc1pod-leaf1:
-          ansible_host: 172.20.20.4
-        clab-dc1pod-leaf2:
-          ansible_host: 172.20.20.11
-        clab-dc1pod-leaf3:
           ansible_host: 172.20.20.10
-        clab-dc1pod-leaf4:
-          ansible_host: 172.20.20.8
-        clab-dc1pod-leaf5:
-          ansible_host: 172.20.20.2
-        clab-dc1pod-spine1:
+        clab-dc1pod-leaf2:
           ansible_host: 172.20.20.3
+        clab-dc1pod-leaf3:
+          ansible_host: 172.20.20.7
+        clab-dc1pod-leaf4:
+          ansible_host: 172.20.20.9
+        clab-dc1pod-leaf5:
+          ansible_host: 172.20.20.8
+        clab-dc1pod-spine1:
+          ansible_host: 172.20.20.11
         clab-dc1pod-spine2:
           ansible_host: 172.20.20.5
         clab-dc1pod-spine3:
-          ansible_host: 172.20.20.9
+          ansible_host: 172.20.20.2

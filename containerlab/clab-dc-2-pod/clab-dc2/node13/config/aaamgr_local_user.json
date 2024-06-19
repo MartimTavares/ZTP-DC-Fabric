@@ -1,0 +1,16 @@
+{
+ "users": {
+  "admin": {
+   "password": [
+    "$ar2$aOvsuj0ALlU=$r750fMa3ZEA/Di8dIfU2fQ=="
+   ],
+   "failed_login_count": 0,
+   "locked_out": false,
+   "password_changed_after_first_login": false,
+   "password_update_time": "2024-06-19T20:43:31Z",
+   "last_successful_login_time": "2024-06-19T20:45:23Z"
+  }
+ },
+ "ntp_sync": false,
+ "password_change_after_first_login": false
+}
