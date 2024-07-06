@@ -1,5 +1,8 @@
 # Configurationless-DC-Fabric
-[Build data and AI skills with DataCamp](https://www.datacamp.com)
+
+## Demonstration of How this Agent Works in a DC Fabric
+This [Demo video](https://youtu.be/_9rLhn5GWy4) shows an example scenario (2-Pod topology) of how this agent works and how resilient it is to dynamic changes in the network.
+
 ## Agent's Files
 The following files are used to deploy and execute the ConfigurationLess agent:
 
