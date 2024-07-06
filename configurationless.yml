@@ -6,12 +6,12 @@ configurationless:
    wait-for-config: No
    failure-threshold: 100
    failure-action: wait=1
-   #yang-modules:
-   #    names: 
-   #        - "configurationless"
-   #    source-directories:
-   #        - "/opt/srtelemetry/yang/"
-   #        - "/opt/srlinux/models/srl_nokia/models"
-   #        #- "/opt/srlinux/models/srl_nokia/models/common"
-   #        #- "/opt/srlinux/models/srl_nokia/models/network-instance"
-   #        #- "/opt/srlinux/models/srl_nokia/models/system"
+   yang-modules:
+       names: 
+           - "configurationless"
+       source-directories:
+           - "/opt/srtelemetry/yang/"
+           - "/opt/srlinux/models/srl_nokia/models"
+           - "/opt/srlinux/models/srl_nokia/models/common"
+           - "/opt/srlinux/models/srl_nokia/models/network-instance"
+           - "/opt/srlinux/models/srl_nokia/models/system"

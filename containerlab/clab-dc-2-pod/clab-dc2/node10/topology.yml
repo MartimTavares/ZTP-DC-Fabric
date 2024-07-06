@@ -4,7 +4,7 @@
 
 chassis_configuration:
   "chassis_type": 65
-  "base_mac": "1a:d7:01:00:00:00"
+  "base_mac": "1a:e7:01:00:00:00"
   "cpm_card_type": 176
 
 slot_configuration:

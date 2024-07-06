@@ -158,7 +158,7 @@ def macToBits(mac_address:str):
     return mac_binary
 
 
-def bitsToIpv4(binary):
+def bitsToIpv4(binary, hostname):
     ## - Remove the leftmost 24 bits to have only 24
     bit32_binary = binary[24:]
     bit32_binary = "00000000"+bit32_binary
@@ -169,6 +169,7 @@ def bitsToIpv4(binary):
     ## - Ensuring first byte is between 1 and 223
     del decimal_octets[0]
     first_byte = random.randint(1, 223)
+    #first_byte = int(hostname[4:])
     decimal_octets.insert(0, first_byte)
     ipv4_address = '.'.join(map(str, decimal_octets))
     return ipv4_address
@@ -370,7 +371,7 @@ def handle_RouteNotification(notification: Notification, state, gnmiclient) -> N
             ## - Only set a new iBGP configuration if the previously known topology changed.
             #if (len(intersect(state.leaves, leaves)) != len(state.leaves) or len(state.leaves) != len(leaves)) or (len(intersect(state.spines, spines)) != len(state.spines) or len(state.spines) != len(spines)) or (len(intersect(state.super_spines, super_spines)) != len(state.super_spines) or len(state.super_spines) != len(super_spines)) or (len(intersect(state.borders, border)) != len(state.borders) or len(state.super_spines) != len(border)):
             if state.leaves != leaves or state.spines != spines or state.super_spines != super_spines or state.borders != border:
-                logging.info(f"Leaves: {str(leaves)}\nSpines: {str(spines)}\nSuper-Spines:{str(super_spines)}\nBorder-Leaves:{str(border)}\n")
+                logging.info(f"Leaves: {str(leaves)}\nSpines: {str(spines)}\nSuper-Spines: {str(super_spines)}\nBorder-Leaves: {str(border)}\n")
                 elected_rr = []
                 if len(super_spines) > 0:
                     for e in range(len(super_spines)):
@@ -671,7 +672,8 @@ def Run(hostname):
                         state.sys_ip = check_ip_exist['notification'][0]['update'][0]['val']['address'][0]['ip-prefix'][:-3]
             ## - Create a Loopback address in case it doesn't exist already
             else:
-                router_id_ipv4 = bitsToIpv4(macToBits(sys_mac))
+                #router_id_ipv4 = bitsToIpv4(macToBits(sys_mac))
+                router_id_ipv4 = bitsToIpv4(macToBits(sys_mac), hostname)
                 sys0_conf = {
                             'subinterface' : [
                                 {

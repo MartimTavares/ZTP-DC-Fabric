@@ -1,0 +1,50 @@
+module configurationless {
+
+    yang-version "1";
+
+    // namespace
+    namespace "urn:srl_nokia_ext/configurationless";
+    prefix "configurationless";
+
+    import srl_nokia-common {
+        prefix srl-comm;
+    }
+
+    import srl_nokia-system {
+        prefix srl-system;
+    }
+    
+    import srl_nokia-extensions {
+        prefix srl-ext;
+    }
+
+    // description
+    description  "ConfigurationLess YANG module";
+
+    // revision(s)
+    revision "2023-07-5" {
+        description "ConfigurationLess YANG module 1.0";
+    }
+
+    grouping configurationless-top {
+        description "Top level grouping for configurationless sample app";
+
+        container configurationless {
+            presence "presence container";
+            description "Top level enclosing container for configurationless sample app config and operational state data";
+
+            leaf ibgp-timer-delay {
+                type uint32;
+                default "2";
+                srl-ext:show-importance high;
+                description "Time delay (seconds) after each time the agent configures an iBGP session";
+            }
+        } // grouping configurationless-top
+
+    }
+
+    augment "/srl-system:system" {
+        uses configurationless-top;
+    }
+
+}

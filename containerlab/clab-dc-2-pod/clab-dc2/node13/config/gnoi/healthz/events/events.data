@@ -4,397 +4,397 @@ c
 	interface
 nameethernet-1/56
 transceiver	
-healthz21928050437656506940Bú…Í³İÄÀĞ
+healthz21931056312208545267Bˆ“Ö³µó‡½
 c
 >"
 	interface
 nameethernet-1/55
 transceiver	
-healthz21928050437656497144Bú…Í³™ø¿Ğ
+healthz21931056312208534741Bˆ“Ö³—¡‡½
 c
 >"
 	interface
 nameethernet-1/54
 transceiver	
-healthz21928050437656481001Bú…Í³Šú¾Ğ
+healthz21931056312208529245Bˆ“Ö³Ÿö†½
 c
 >"
 	interface
 nameethernet-1/51
 transceiver	
-healthz21928050437656431992Bú…Í³™û»Ğ
+healthz21931056312208487001Bˆ“Ö³›¬„½
 c
 >"
 	interface
 nameethernet-1/20
 transceiver	
-healthz21928050437654612966Bú…Í³‡øÌÏ
+healthz21931056312207366026Bˆ“Ö³Ìö¿¼
 c
 >"
 	interface
 nameethernet-1/53
 transceiver	
-healthz21928050437656470384Bú…Í³‘§¾Ğ
+healthz21931056312208523739Bˆ“Ö³Ë†½
 c
 >"
 	interface
 nameethernet-1/31
 transceiver	
-healthz21928050437654930873Bú…Í³Ú«àÏ
+healthz21931056312207599811Bˆ“Ö³…™Î¼
 c
 >"
 	interface
 nameethernet-1/39
 transceiver	
-healthz21928050437655610009Bú…Í³ºå‰Ğ
+healthz21931056312207866725Bˆ“Ö³§¾Ş¼
 c
 >"
 	interface
 nameethernet-1/16
 transceiver	
-healthz21928050437654576199Bú…Í³èØÊÏ
+healthz21931056312207340053Bˆ“Ö³×«¾¼
 c
 >"
 	interface
 nameethernet-1/19
 transceiver	
-healthz21928050437654607608Bú…Í³™ÎÌÏ
+healthz21931056312207360582Bˆ“Ö³ˆÌ¿¼
 Q
 ,
 
 platform
 fan-tray
 id4	
-healthz21928050437650130813Bú…Í³¯»Í
+healthz21931056312204063127Bˆ“Ö³Ùªöº
 c
 >"
 	interface
 nameethernet-1/33
 transceiver	
-healthz21928050437654942614Bú…Í³·‡áÏ
+healthz21931056312207610865Bˆ“Ö³³ïÎ¼
 c
 >"
 	interface
 nameethernet-1/45
 transceiver	
-healthz21928050437656069285Bú…Í³Æé¥Ğ
+healthz21931056312208217346Bˆ“Ö³Äñó¼
 c
 >"
 	interface
 nameethernet-1/14
 transceiver	
-healthz21928050437654557297Bú…Í³’ÅÉÏ
+healthz21931056312207323378Bˆ“Ö³´©½¼
 b
 =!
 	interface
 nameethernet-1/7
 transceiver	
-healthz21928050437654492666Bú…Í³›ÌÅÏ
+healthz21931056312207270113Bˆ“Ö³£‰º¼
 c
 >"
 	interface
 nameethernet-1/25
 transceiver	
-healthz21928050437654649570Bú…Í³ƒ–ÏÏ
+healthz21931056312207402014Bˆ“Ö³àÂ¼
 b
 =!
 	interface
 nameethernet-1/6
 transceiver	
-healthz21928050437654486675Bú…Í³´ÅÏ
+healthz21931056312207264219Bˆ“Ö³Û¹¼
 c
 >"
 	interface
 nameethernet-1/37
 transceiver	
-healthz21928050437655586655Bú…Í³€¯ˆĞ
+healthz21931056312207854557Bˆ“Ö³Ÿßİ¼
 b
 =!
 	interface
 nameethernet-1/1
 transceiver	
-healthz21928050437651884168Bú…Í³©±¦Î
+healthz21931056312205569160Bˆ“Ö³Ê Ò»
 c
 >"
 	interface
 nameethernet-1/41
 transceiver	
-healthz21928050437655640309Bú…Í³–Ò‹Ğ
+healthz21931056312207880528Bˆ“Ö³’ªß¼
 c
 >"
 	interface
 nameethernet-1/47
 transceiver	
-healthz21928050437656094457Bú…Í³š®§Ğ
+healthz21931056312208229925Bˆ“Ö³çÓô¼
 c
 >"
 	interface
 nameethernet-1/17
 transceiver	
-healthz21928050437654585950Bú…Í³ÿ¤ËÏ
+healthz21931056312207345631Bˆ“Ö³¡×¾¼
 c
 >"
 	interface
 nameethernet-1/13
 transceiver	
-healthz21928050437654551453Bú…Í³¾—ÉÏ
+healthz21931056312207317547Bˆ“Ö³íû¼¼
 c
 >"
 	interface
 nameethernet-1/12
 transceiver	
-healthz21928050437654545790Bú…Í³ŸëÈÏ
+healthz21931056312207311788Bˆ“Ö³îÎ¼¼
 S
 .
 
 platform
 linecard	
 slot1	
-healthz21928050437650723085Bú…Í³®ÂßÍ
+healthz21931056312204429194Bˆ“Ö³ÌÖŒ»
 c
 >"
 	interface
 nameethernet-1/10
 transceiver	
-healthz21928050437654528495Bú…Í³äÇÏ
+healthz21931056312207296554Bˆ“Ö³ì×»¼
 U
 0
 
 platform
 power-supply
 id2	
-healthz21928050437651139671Bú…Í³øøøÍ
+healthz21931056312204845129Bˆ“Ö³‹ˆ¦»
 b
 =!
 	interface
 nameethernet-1/3
 transceiver	
-healthz21928050437654462212Bú…Í³¥ŞÃÏ
+healthz21931056312207239589Bˆ“Ö³çš¸¼
 b
 =!
 	interface
 nameethernet-1/8
 transceiver	
-healthz21928050437654501697Bú…Í³â’ÆÏ
+healthz21931056312207275788Bˆ“Ö³Îµº¼
 b
 =!
 	interface
 nameethernet-1/4
 transceiver	
-healthz21928050437654468948Bú…Í³õ’ÄÏ
+healthz21931056312207246381Bˆ“Ö³ïÏ¸¼
 Q
 ,
 
 platform
 fan-tray
 id1	
-healthz21928050437649926316Bú…Í³Íñ®Í
+healthz21931056312203866424Bˆ“Ö³ú©êº
 Q
 ,
 
 platform
 fan-tray
 id3	
-healthz21928050437650113201Bú…Í³Ò¥ºÍ
+healthz21931056312204050539Bˆ“Ö³­Èõº
 c
 >"
 	interface
 nameethernet-1/22
 transceiver	
-healthz21928050437654629275Bú…Í³¼÷ÍÏ
+healthz21931056312207381906Bˆ“Ö³ÔòÀ¼
 T
 -
 
 platform
 control	
 slotA	
-healthz21928050437649625654Bú…Í³×ÄœÍ
+healthz21931056312203538481Bˆ“Ö³ó§Öº
 b
 =!
 	interface
 nameethernet-1/2
 transceiver	
-healthz21928050437654441488Bú…Í³±¼ÂÏ
+healthz21931056312207222079Bˆ“Ö³’·¼
 b
 =!
 	interface
 nameethernet-1/5
 transceiver	
-healthz21928050437654474983Bú…Í³ˆÂÄÏ
+healthz21931056312207252587Bˆ“Ö³­€¹¼
 c
 >"
 	interface
 nameethernet-1/11
 transceiver	
-healthz21928050437654535303Bú…Í³¨™ÈÏ
+healthz21931056312207302204Bˆ“Ö³şƒ¼¼
 c
 >"
 	interface
 nameethernet-1/26
 transceiver	
-healthz21928050437654885570Bú…Í³ãÉİÏ
+healthz21931056312207567737Bˆ“Ö³»Ì¼
 U
 0
 
 platform
 power-supply
 id1	
-healthz21928050437651041596Bú…Í³İúòÍ
+healthz21931056312204766430Bˆ“Ö³ ¡¡»
 c
 >"
 	interface
 nameethernet-1/46
 transceiver	
-healthz21928050437656083194Bú…Í³›Ö¦Ğ
+healthz21931056312208223835Bˆ“Ö³¤ô¼
 b
 =!
 	interface
 nameethernet-1/9
 transceiver	
-healthz21928050437654517674Bú…Í³ËÇÏ
+healthz21931056312207290660Bˆ“Ö³æ©»¼
 c
 >"
 	interface
 nameethernet-1/27
 transceiver	
-healthz21928050437654894842Bú…Í³›’ŞÏ
+healthz21931056312207576776Bˆ“Ö³ŠåÌ¼
 c
 >"
 	interface
 nameethernet-1/18
 transceiver	
-healthz21928050437654601765Bú…Í³Æ ÌÏ
+healthz21931056312207354912Bˆ“Ö³âŸ¿¼
 c
 >"
 	interface
 nameethernet-1/15
 transceiver	
-healthz21928050437654568872Bú…Í³ÉŸÊÏ
+healthz21931056312207334502Bˆ“Ö³¨€¾¼
 c
 >"
 	interface
 nameethernet-1/52
 transceiver	
-healthz21928050437656458850Bú…Í³ƒÍ½Ğ
+healthz21931056312208516336Bˆ“Ö³²‘†½
 S
 ,
 
 platform	
 chassis	
 healthz
-status21928050437649075099Bú…Í³¼÷úÌ
+status21931056312203077832Bˆ“Ö³Š™ºº
 c
 >"
 	interface
 nameethernet-1/23
 transceiver	
-healthz21928050437654634841Bú…Í³ú¢ÎÏ
+healthz21931056312207387339Bˆ“Ö³Á¼
 c
 >"
 	interface
 nameethernet-1/35
 transceiver	
-healthz21928050437655560608Bú…Í³Áã†Ğ
+healthz21931056312207835254Bˆ“Ö³¸ÈÜ¼
 c
 >"
 	interface
 nameethernet-1/24
 transceiver	
-healthz21928050437654644027Bú…Í³ÜêÎÏ
+healthz21931056312207392735Bˆ“Ö³¡ÇÁ¼
 c
 >"
 	interface
 nameethernet-1/21
 transceiver	
-healthz21928050437654622352Bú…Í³±ÁÍÏ
+healthz21931056312207375126Bˆ“Ö³Ø½À¼
 c
 >"
 	interface
 nameethernet-1/28
 transceiver	
-healthz21928050437654900984Bú…Í³™ÂŞÏ
+healthz21931056312207582986Bˆ“Ö³Ì•Í¼
 c
 >"
 	interface
 nameethernet-1/29
 transceiver	
-healthz21928050437654911290Bú…Í³Û’ßÏ
+healthz21931056312207588605Bˆ“Ö³¿ÁÍ¼
 c
 >"
 	interface
 nameethernet-1/34
 transceiver	
-healthz21928050437655533522Bú…Í³ó…Ğ
+healthz21931056312207822529Bˆ“Ö³ƒåÛ¼
 c
 >"
 	interface
 nameethernet-1/30
 transceiver	
-healthz21928050437654921442Bú…Í³ƒâßÏ
+healthz21931056312207594319Bˆ“Ö³‘îÍ¼
 c
 >"
 	interface
 nameethernet-1/50
 transceiver	
-healthz21928050437656415995Bú…Í³œşºĞ
+healthz21931056312208478815Bˆ“Ö³¡ìƒ½
 c
 >"
 	interface
 nameethernet-1/36
 transceiver	
-healthz21928050437655574403Bú…Í³¤Ï‡Ğ
+healthz21931056312207845203Bˆ“Ö³•–İ¼
 c
 >"
 	interface
 nameethernet-1/38
 transceiver	
-healthz21928050437655598212Bú…Í³¥‰‰Ğ
+healthz21931056312207860906Bˆ“Ö³ìŞ¼
 c
 >"
 	interface
 nameethernet-1/40
 transceiver	
-healthz21928050437655628649Bú…Í³Š÷ŠĞ
+healthz21931056312207872677Bˆ“Ö³çìŞ¼
 c
 >"
 	interface
 nameethernet-1/42
 transceiver	
-healthz21928050437656010053Bú…Í³æš¢Ğ
+healthz21931056312208186617Bˆ“Ö³»ò¼
 c
 >"
 	interface
 nameethernet-1/43
 transceiver	
-healthz21928050437656035143Bú…Í³èŞ£Ğ
+healthz21931056312208204146Bˆ“Ö³´Šó¼
 c
 >"
 	interface
 nameethernet-1/44
 transceiver	
-healthz21928050437656048576Bú…Í³áÇ¤Ğ
+healthz21931056312208211170Bˆ“Ö³¤Áó¼
 Q
 ,
 
 platform
 fan-tray
 id2	
-healthz21928050437650098263Bú…Í³ø°¹Í
+healthz21931056312204040566Bˆ“Ö³¸úôº
 c
 >"
 	interface
 nameethernet-1/48
 transceiver	
-healthz21928050437656105018Bú…Í³Û€¨Ğ
+healthz21931056312208235796Bˆ“Ö³Öõ¼
 c
 >"
 	interface
 nameethernet-1/32
 transceiver	
-healthz21928050437654937181Bú…Í³şÜàÏ
+healthz21931056312207605570Bˆ“Ö³„ÆÎ¼
 c
 >"
 	interface
 nameethernet-1/49
 transceiver	
-healthz21928050437656125042Bú…Í³“©Ğ
+healthz21931056312208246425Bˆ“Ö³ÛÔõ¼

@@ -13,10 +13,12 @@ topology:
       # leaf configurations, e.g: set / interface ethernet-1/49 subinterface 0 ipv4 address 192.168.11.1/30
       #startup-config: configs/leaf1.cfg
       binds:
+        ## - CLI:
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/show-fabric-plugin.py:/etc/opt/srlinux/cli/plugins/show-fabric-plugin.py:rw
         ## - Executable File:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
         ## - YANG Models:
-        #- /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
         ## - Configuration File:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
         ## - Python Script:
@@ -34,7 +36,7 @@ topology:
         ## - Executable File:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
         ## - YANG Models:
-        #- /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
         ## - Configuration File:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
         ## - Python Script:
@@ -52,7 +54,7 @@ topology:
         ## - Executable File:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
         ## - YANG Models:
-        #- /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
         ## - Configuration File:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
         ## - Python Script:
@@ -70,7 +72,7 @@ topology:
         ## - Executable File:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
         ## - YANG Models:
-        #- /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
         ## - Configuration File:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
         ## - Python Script:
@@ -88,7 +90,7 @@ topology:
         ## - Executable File:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
         ## - YANG Models:
-        #- /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
         ## - Configuration File:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
         ## - Python Script:
@@ -106,7 +108,7 @@ topology:
         ## - Executable File:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
         ## - YANG Models:
-        #- /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
         ## - Configuration File:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
         ## - Python Script:
@@ -124,7 +126,7 @@ topology:
         ## - Executable File:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
         ## - YANG Models:
-        #- /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
         ## - Configuration File:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
         ## - Python Script:
@@ -142,7 +144,7 @@ topology:
         ## - Executable File:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
         ## - YANG Models:
-        #- /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
         ## - Configuration File:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
         ## - Python Script:
@@ -160,7 +162,7 @@ topology:
         ## - Executable File:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
         ## - YANG Models:
-        #- /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
         ## - Configuration File:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
         ## - Python Script:
@@ -178,7 +180,7 @@ topology:
         ## - Executable File:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.sh:/usr/local/bin/configurationless.sh:rw
         ## - YANG Models:
-        #- /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
+        - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yang:/opt/configurationless/yang/configurationless.yang:rw
         ## - Configuration File:
         - /home/nokia/Desktop/martim/Configurationless-DC-Fabric/configurationless.yml:/etc/opt/srlinux/appmgr/configurationless.yml:rw
         ## - Python Script:
